@@ -1,0 +1,38 @@
+*.iml
+.gradle/
+**/build/
+local.properties
+.idea/
+.DS_Store
+captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.aab
+*.class
+*.dex
+gen/
+out/
+release/
+
+# === AI Factory baseline (do not delete this header) ===
+# Gradle / Android build outputs
+.gradle/
+build/
+**/build/
+*.class
+*.dex
+*.apk
+*.aab
+*.aar
+captures/
+.externalNativeBuild/
+.cxx/
+# IDE
+*.iml
+.idea/
+# Local config
+local.properties
+# Keystores
+*.jks
+*.keystore

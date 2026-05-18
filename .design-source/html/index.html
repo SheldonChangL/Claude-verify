@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="author" content="JuliaTseng" />
+<meta name="company" content="JET OPTOELECTRONICS" />
+<meta name="product" content="Vigorplus_Moto_APP_Prototype" />
+<title>MotoCam — JET Optoelectronics</title>
+<link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+<link rel="apple-touch-icon" href="assets/icons/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#292929; --bg2:#1E1E1E; --bg3:#333; --bg4:#3D3D3D;
+  --brand:#AACC03; --brand15:rgba(170,204,3,.15); --brand40:rgba(170,204,3,.4);
+  --red:#FF4444; --red15:rgba(255,68,68,.15);
+  --orange:#FF9F0A; --orange15:rgba(255,159,10,.15);
+  --green:#30D158;
+  --t1:#FFF; --t2:#AAA; --t3:#666;
+  --border:rgba(255,255,255,.08);
+  --r8:8px; --r14:14px; --r20:20px;
+  --font:'SF Pro Display','Helvetica Neue','Noto Sans TC',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:#111;display:flex;align-items:center;justify-content:center;font-family:var(--font);-webkit-font-smoothing:antialiased}
+button{border:none;background:none;cursor:pointer;font-family:inherit;color:inherit}
+img{display:block}
+
+/* ── Phone Frame ── */
+.frame{position:relative;width:390px;height:844px;background:#000;border-radius:48px;padding:12px;flex-shrink:0;
+  box-shadow:0 0 0 1px rgba(255,255,255,.1),0 40px 80px rgba(0,0,0,.9),inset 0 0 0 1px rgba(255,255,255,.05)}
+.phone{border-radius:38px;overflow:hidden;background:var(--bg);position:relative;height:100%;display:flex;flex-direction:column}
+
+/* Dynamic Island */
+.dynisland{position:absolute;top:10px;left:50%;transform:translateX(-50%);
+  width:110px;height:30px;background:#000;border-radius:15px;z-index:100;
+  display:flex;align-items:center;justify-content:center;gap:6px}
+.di-dot{width:7px;height:7px;border-radius:50%;background:var(--red)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.di-dot.pulse{animation:blink 1s infinite}
+.di-txt{font-size:10px;font-weight:700;color:#fff;letter-spacing:.3px}
+
+/* Status Bar */
+.sbar{display:flex;justify-content:space-between;align-items:center;padding:46px 24px 0;flex-shrink:0;position:relative;z-index:10}
+.stime{font-size:15px;font-weight:600;color:#fff;letter-spacing:.02em}
+.sicons{display:flex;align-items:center;gap:5px}
+.bat{display:flex;align-items:center}
+.bat-body{width:22px;height:11px;border:1.5px solid rgba(255,255,255,.8);border-radius:2.5px;padding:1.5px;position:relative}
+.bat-body::after{content:'';position:absolute;right:-4px;top:50%;transform:translateY(-50%);width:2.5px;height:5px;background:rgba(255,255,255,.8);border-radius:0 1px 1px 0}
+.bat-fill{height:100%;background:#fff;border-radius:1px;width:75%}
+
+/* ── Tab Bar ── */
+.nav{display:flex;justify-content:space-around;padding:10px 0 28px;background:var(--bg2);
+  border-top:1px solid var(--border);flex-shrink:0;position:relative;z-index:50}
+.nav::before{content:'';position:absolute;top:0;left:10%;right:10%;height:1px;
+  background:linear-gradient(90deg,transparent,var(--brand40),transparent)}
+.ni{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;padding:4px 20px;min-width:56px;min-height:44px;position:relative}
+.ni-icon{width:58px;height:58px;display:flex;align-items:center;justify-content:center;
+  transition:transform .2s cubic-bezier(.34,1.56,.64,1)}
+.ni.on .ni-icon{transform:translateY(-1px)}
+.ni:active .ni-icon{transform:scale(.85)}
+.ni-icon img{width:58px;height:58px;object-fit:contain}
+/* Badge */
+.ni-badge{position:absolute;top:0px;right:10px;min-width:16px;height:16px;padding:0 4px;
+  background:var(--red);border-radius:99px;border:1.5px solid var(--bg2);
+  font-size:9px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center}
+
+/* ── Content ── */
+.content{flex:1;overflow:hidden;position:relative}
+
+/* ── LIVE VIEW ── */
+.liveview{position:relative;width:100%;height:100%;background:var(--bg);overflow:hidden}
+
+/* Header band — holds the big speed readout (logo removed) */
+.live-logo{position:absolute;top:4px;left:0;right:0;height:96px;display:flex;align-items:center;z-index:20}
+
+/* Bottom panel: pressed up against cam-feed bottom — tracks cam-feed offset */
+.bottom-panel{position:absolute;top:calc(50% + 54px);left:0;right:0;
+  display:flex;flex-direction:column;gap:6px;z-index:20}
+
+/* 16:9 camera feed (simulates rear-facing MotoCam)
+   Shifted down ~50px (vs original -110) to leave room for the alert bar to
+   land between the speed readout above and the viewport below. */
+.cam-feed{position:absolute;left:0;right:0;top:calc(50% - 60px);transform:translateY(-50%);
+  width:100%;aspect-ratio:16/9;background:#000;overflow:hidden;
+  transition:top .35s ease,left .35s ease,width .35s ease,height .35s ease,transform .35s ease}
+
+/* Fullscreen toggle button — bottom-right inside cam-feed */
+.fs-btn{position:absolute;bottom:8px;right:8px;z-index:25;
+  width:34px;height:34px;border-radius:7px;background:rgba(0,0,0,.55);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  border:1px solid rgba(255,255,255,.2);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  transition:background .15s,transform .12s}
+.fs-btn:active{transform:scale(.92);background:rgba(0,0,0,.78)}
+.fs-icon-exit{display:none}
+.liveview.fullscreen .fs-icon-enter{display:none}
+.liveview.fullscreen .fs-icon-exit{display:block}
+
+/* Fullscreen mode — landscape, cam-feed fills the screen.
+   Speed readout + bottom-panel are hidden; the alert banner is KEPT so
+   BSD / RCW / fall notifications still surface over the landscape video. */
+.liveview.fullscreen{background:#000;z-index:100}
+.liveview.fullscreen .live-logo,
+.liveview.fullscreen .bottom-panel{display:none}
+/* Alert banner in fullscreen — rotated 90° CW so it reads upright when the
+   user holds the phone CCW (right edge of portrait = top of landscape).
+   The pivot is placed at the right edge of the phone (via left:calc(100% - 14px)
+   plus transform-origin:top left). With CW rotation the 300×50 banner
+   then unfolds DOWNWARD from that pivot as a vertical strip sitting 14 px
+   in from the right edge — fully visible from top:30 to top:330. */
+.liveview.fullscreen .alert-banner{
+  top:30px;
+  left:calc(100% - 14px);
+  right:auto;
+  width:300px;
+  height:50px;
+  max-width:none;
+  transform:rotate(90deg) translateY(-20px);
+  transform-origin:top left;
+  z-index:60;
+}
+.liveview.fullscreen .alert-banner.show{transform:rotate(90deg) translateY(0)}
+.liveview.fullscreen .cam-feed{
+  left:50%;right:auto;top:50%;
+  width:693px;height:390px;aspect-ratio:auto;
+  transform:translate(-50%,-50%) rotate(90deg);
+  transform-origin:center;border-radius:0}
+
+/* BSD/RCW overlays follow the landscape rotation:
+   bsd-l → horizontal strip at phone TOP (visual left of rotated view)
+   bsd-r → horizontal strip at phone BOTTOM (visual right of rotated view) */
+.liveview.fullscreen .bsd-overlay{width:auto;height:58px;left:0;right:0}
+.liveview.fullscreen .bsd-l{bottom:auto}
+.liveview.fullscreen .bsd-r{top:auto;bottom:0}
+.liveview.fullscreen .bsd-l .bsd-stripe,
+.liveview.fullscreen .bsd-l.bsd .bsd-stripe{background:linear-gradient(to bottom,rgba(255,159,10,.6) 0%,transparent 100%)}
+.liveview.fullscreen .bsd-r .bsd-stripe,
+.liveview.fullscreen .bsd-r.bsd .bsd-stripe{background:linear-gradient(to top,rgba(255,159,10,.6) 0%,transparent 100%)}
+.liveview.fullscreen .bsd-l.rcw .bsd-stripe{background:linear-gradient(to bottom,rgba(255,68,68,.7) 0%,transparent 100%)}
+.liveview.fullscreen .bsd-r.rcw .bsd-stripe{background:linear-gradient(to top,rgba(255,68,68,.7) 0%,transparent 100%)}
+
+/* Inner rotating scene: used by fall overlay so only the pixels inside the feed rotate */
+.cam-scene{position:absolute;inset:0;transform-origin:center;transition:transform .5s cubic-bezier(.34,1.56,.64,1);will-change:transform}
+.cam-scene.fall  {transform:rotate(-42deg) scale(1.55)}
+
+/* Camera scene */
+.cam-svg{position:absolute;inset:0;width:100%;height:100%}
+.top-fade{position:absolute;top:0;left:0;right:0;height:40%;
+  background:linear-gradient(to bottom,rgba(0,0,0,.55) 0%,transparent 100%);z-index:10;pointer-events:none}
+.bot-fade{position:absolute;bottom:0;left:0;right:0;height:35%;
+  background:linear-gradient(to top,rgba(0,0,0,.6) 0%,transparent 100%);z-index:10;pointer-events:none}
+
+/* REC badge — top-right inside cam-feed; red when recording, gray when idle */
+.rec-badge{position:absolute;top:8px;right:8px;z-index:25;display:flex;align-items:center;gap:4px;
+  background:rgba(255,68,68,.85);padding:3px 8px;border-radius:5px;transition:background .2s}
+.rec-badge.idle{background:rgba(120,120,120,.6)}
+.rb-dot{width:5px;height:5px;background:#fff;border-radius:50%;animation:blink 1s infinite}
+.rec-badge.idle .rb-dot{background:rgba(255,255,255,.55);animation:none}
+.rb-txt{font-size:14px;font-weight:700;color:#fff;letter-spacing:.5px}
+
+/* Speed display (compact HUD, top-center of feed) */
+.speed-panel{position:absolute;left:14px;top:50%;transform:translateY(-50%);z-index:20;
+  display:flex;align-items:baseline;gap:10px;pointer-events:none}
+.hspd{font-size:96px;font-weight:800;color:var(--brand);line-height:1;letter-spacing:-.02em;
+  text-shadow:0 0 28px var(--brand40);font-variant-numeric:tabular-nums}
+.hunit{font-size:20px;font-weight:700;color:var(--brand);letter-spacing:1.8px;opacity:.9;padding-bottom:9px}
+
+/* Shutter flash (inside cam-feed) */
+.shot-flash{position:absolute;inset:0;z-index:70;background:#fff;opacity:0;pointer-events:none}
+.shot-flash.fire{animation:shotFlash .55s ease-out}
+@keyframes shotFlash{0%{opacity:0}10%{opacity:.9}100%{opacity:0}}
+
+/* BSD Overlays — span the full phone view (not just the camera feed) */
+.bsd-overlay{position:absolute;top:0;width:58px;bottom:0;z-index:45;pointer-events:none;opacity:0;transition:opacity .15s}
+.bsd-l{left:0}
+.bsd-r{right:0}
+.bsd-stripe{position:absolute;inset:0}
+.bsd-l .bsd-stripe,.bsd-l.bsd .bsd-stripe{background:linear-gradient(to right,rgba(255,159,10,.6) 0%,transparent 100%)}
+.bsd-r .bsd-stripe,.bsd-r.bsd .bsd-stripe{background:linear-gradient(to left,rgba(255,159,10,.6) 0%,transparent 100%)}
+.bsd-l.rcw .bsd-stripe{background:linear-gradient(to right,rgba(255,68,68,.7) 0%,transparent 100%)}
+.bsd-r.rcw .bsd-stripe{background:linear-gradient(to left,rgba(255,68,68,.7) 0%,transparent 100%)}
+@keyframes stripePulse{0%,100%{opacity:.45}50%{opacity:1}}
+.bsd-overlay.show .bsd-stripe{animation:stripePulse 1s ease-in-out infinite}
+.bsd-overlay.show{opacity:1}
+
+/* Alert banner — sits in the gap between the speed readout (top) and the
+   viewport below, so it never covers the speed or the REC badge. */
+.alert-banner{position:absolute;top:106px;left:14px;right:14px;border-radius:var(--r14);
+  padding:10px 14px;display:flex;align-items:center;gap:10px;z-index:40;
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  transform:translateY(-20px);opacity:0;transition:transform .3s cubic-bezier(.34,1.56,.64,1),opacity .25s;pointer-events:none}
+.alert-banner.show{transform:translateY(0);opacity:1}
+.alert-banner.bsd{background:rgba(40,28,5,.9);border:1px solid rgba(255,159,10,.45);box-shadow:0 0 16px rgba(255,159,10,.2)}
+.alert-banner.rcw{background:rgba(40,5,5,.9);border:1px solid rgba(255,68,68,.45);box-shadow:0 0 16px rgba(255,68,68,.25)}
+.ab-icon-wrap{flex-shrink:0;width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center}
+.alert-banner.bsd .ab-icon-wrap{background:rgba(255,159,10,.18)}
+.alert-banner.rcw .ab-icon-wrap{background:rgba(255,68,68,.18)}
+.ab-body{flex:1;min-width:0}
+.ab-title{font-size:17px;font-weight:800;letter-spacing:.02em;line-height:1.2}
+.alert-banner.bsd .ab-title{color:var(--orange)}
+.alert-banner.rcw .ab-title{color:var(--red)}
+.ab-sub{font-size:14px;color:rgba(255,255,255,.55);margin-top:2px}
+.ab-time{font-size:14px;color:rgba(255,255,255,.3);flex-shrink:0;font-family:monospace}
+.alert-banner.tilt{background:rgba(45,5,12,.92);border:1px solid rgba(255,68,68,.55);box-shadow:0 0 22px rgba(255,68,68,.35)}
+.alert-banner.tilt .ab-icon-wrap{background:rgba(255,68,68,.22)}
+.alert-banner.tilt .ab-title{color:#FF5864}
+
+/* Camera info pills — inside cam-feed, bottom */
+.cam-info{position:absolute;bottom:8px;left:0;right:0;
+  display:flex;justify-content:center;gap:6px;z-index:20;pointer-events:none;transition:opacity .25s}
+.cam-pill{display:flex;align-items:center;gap:4px;padding:2px 8px;
+  background:rgba(0,0,0,.55);border-radius:99px;backdrop-filter:blur(5px)}
+.cam-dot{width:5px;height:5px;border-radius:50%;background:var(--green)}
+@keyframes liveDot{0%,100%{opacity:1}50%{opacity:.2}}
+.cam-dot{animation:liveDot 2s ease-in-out infinite}
+.cam-text{font-size:14px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#fff}
+
+/* Critical flash (fall) — inside cam-feed */
+.crit-flash{position:absolute;inset:0;z-index:45;opacity:0;pointer-events:none;
+  background:radial-gradient(ellipse at center,transparent 30%,rgba(255,68,68,.55) 100%)}
+.crit-flash.show{animation:critPulse .9s ease-in-out infinite}
+@keyframes critPulse{0%,100%{opacity:.45}50%{opacity:.9}}
+
+/* ── Fall overlay (new): in-frame alert instead of rotating the device frame ── */
+.fall-overlay{position:absolute;inset:0;z-index:60;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:6px;padding:10px 14px;
+  background:rgba(20,0,4,.68);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  opacity:0;transform:scale(.96);transition:opacity .25s,transform .25s cubic-bezier(.34,1.56,.64,1);pointer-events:none}
+.fall-overlay.show{opacity:1;transform:scale(1);pointer-events:auto}
+.fall-overlay::after{content:'';position:absolute;inset:0;border:2px solid var(--red);border-radius:inherit;
+  pointer-events:none;animation:fallBorder .8s ease-in-out infinite alternate}
+@keyframes fallBorder{from{box-shadow:inset 0 0 14px rgba(255,68,68,.35),0 0 0 rgba(255,68,68,0);opacity:.7}
+  to{box-shadow:inset 0 0 34px rgba(255,68,68,.65),0 0 14px rgba(255,68,68,.4);opacity:1}}
+.fall-icon{width:34px;height:34px;border-radius:50%;background:rgba(255,68,68,.18);display:flex;align-items:center;justify-content:center;border:1.5px solid rgba(255,88,100,.7)}
+.fall-title{font-size:18px;font-weight:900;color:#FF5864;letter-spacing:.12em}
+.fall-meta{display:flex;align-items:center;gap:8px;font-size:15px;color:rgba(255,255,255,.78)}
+.fall-meta b{font-size:21px;color:#FF7080;font-weight:800;font-variant-numeric:tabular-nums}
+.fall-meta .fm-sep{opacity:.4}
+.fall-actions{display:flex;gap:6px;margin-top:4px;pointer-events:auto}
+.fall-btn{padding:8px 18px;border-radius:8px;font-size:15px;font-weight:700;letter-spacing:.04em;cursor:pointer;transition:transform .12s,background .12s;font-family:var(--font);display:flex;align-items:center;gap:8px}
+.fall-btn:active{transform:scale(.95)}
+/* Single status-style button: "保護錄影紀錄中…" — neutral white-on-dark
+   styling. The pulsing red REC dot on the left still carries the
+   "currently recording" cue. Tap dismisses the overlay. */
+.fall-btn-saving{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.18)}
+.fall-btn-saving .fall-rec-dot{width:8px;height:8px;border-radius:50%;background:var(--red);animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+
+/* ── Below cam-feed: warning bar with auto-rotating messages + centered shutter ──
+   - Brand-green palette so it doesn't read as a BSD alert
+   - 2-line message rows: long advisories wrap inside the bar
+   - Vertical ticker rotates every ~3.8s; first message is cloned to the end
+     so the wrap-around looks continuous, then we snap-reset to index 0
+     without animation once the clone is on-screen. */
+.gps-bar{margin:0 14px;background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--r8);padding:9px 14px;display:flex;align-items:flex-start;gap:12px;flex-shrink:0;min-height:64px}
+/* Dot enlarged 1.5× (9 → 14 px); colour stays brand-green */
+.gps-dot{width:14px;height:14px;border-radius:50%;background:var(--brand);animation:gps-pulse 1.5s ease-in-out infinite;flex-shrink:0;margin-top:10px}
+@keyframes gps-pulse{0%,100%{box-shadow:0 0 0 0 rgba(170,204,3,.5)}50%{box-shadow:0 0 0 8px transparent}}
+.gps-rotator{flex:1;min-width:0;height:46px;overflow:hidden;position:relative}
+.gps-stack{display:block;will-change:transform}
+/* Message text now white for higher contrast on the brand-tinted bar */
+.gps-msg{min-height:46px;display:flex;align-items:center;font-size:17px;line-height:1.35;color:var(--t1);font-weight:600;letter-spacing:.02em;white-space:normal;word-break:break-word}
+
+/* Fullscreen live view: hide the bottom tab bar so the cam-feed truly fills the screen */
+.phone.live-full .nav{display:none}
+
+/* Centered shutter button (camera icon — same asset as index-0417.html) */
+.shutter-row{display:flex;justify-content:center;align-items:center;padding:14px 0 4px;flex-shrink:0}
+.shutter-btn{width:72px;height:72px;background:transparent;border:none;padding:0;cursor:pointer;
+  transition:transform .15s;filter:drop-shadow(0 6px 14px rgba(0,0,0,.5))}
+.shutter-btn img{width:100%;height:100%;display:block;pointer-events:none;opacity:.85}
+.shutter-btn:active{transform:scale(.9)}
+
+.mode-toggle{margin:0 14px;background:var(--bg3);border-radius:var(--r8);padding:4px;
+  display:flex;gap:4px;border:1px solid var(--border);flex-shrink:0}
+.mt-btn{flex:1;padding:6px 4px;border-radius:6px;font-size:11px;font-weight:600;text-align:center;cursor:pointer;color:var(--t3);transition:all .2s;display:flex;align-items:center;justify-content:center;gap:5px}
+.mt-btn.on{background:var(--brand);color:#000}
+.mt-btn svg{display:block}
+
+.live-ctrls{display:flex;justify-content:space-between;align-items:center;padding:2px 16px;flex-shrink:0}
+.lc-btn{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:0;background:none;border:none;color:inherit}
+.lc-icon{width:40px;height:40px;border-radius:11px;background:var(--bg3);display:flex;align-items:center;justify-content:center;border:1px solid var(--border);transition:transform .12s}
+.lc-icon.on{background:var(--brand15);border-color:var(--brand40)}
+.lc-icon.danger{background:var(--red15);border-color:rgba(255,68,68,.4)}
+.lc-btn:active .lc-icon{transform:scale(.9)}
+.lc-label{font-size:9px;color:var(--t2);text-align:center;letter-spacing:.04em}
+.rec-btn-sm{width:54px;height:54px;border-radius:50%;background:var(--red);border:3px solid rgba(255,255,255,.18);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 0 14px rgba(255,68,68,.4);position:relative;padding:0}
+.rec-btn-sm::after{content:'';position:absolute;inset:-6px;border-radius:50%;border:2px solid rgba(255,68,68,.25);animation:pulse-ring 2s ease-out infinite}
+@keyframes pulse-ring{0%{transform:scale(1);opacity:1}100%{transform:scale(1.3);opacity:0}}
+.rec-inner{width:18px;height:18px;background:#fff;border-radius:3px}
+.lc-btn:active .rec-btn-sm{transform:scale(.95)}
+
+.tele{margin:0 14px;background:var(--bg3);border-radius:var(--r14);padding:7px 10px;
+  display:flex;justify-content:space-between;border:1px solid var(--border);flex-shrink:0}
+.te{display:flex;flex-direction:column;align-items:center;gap:1px;flex:1;min-width:0}
+.te-v{font-size:13px;font-weight:700;color:var(--t1);font-variant-numeric:tabular-nums}
+.te-v.brand{color:var(--brand)}
+.te-v.green{color:var(--green)}
+.te-l{font-size:8px;color:var(--t3);text-transform:uppercase;letter-spacing:.4px}
+.te-div{width:1px;background:var(--border);align-self:stretch;margin:2px 0}
+
+/* ── Image-quality collapsible panel (below the viewport, pattern from babycam demo·testing) ──
+   Header is a thin tappable bar; body holds 4 sliders + reset.
+   Collapsed by default so the live view stays the visual focus.
+   All text sizes are 1.5× the original draft for legibility. */
+.iq-panel{margin:0 14px;background:var(--bg2);border-radius:12px;
+  border:1px solid var(--border);overflow:hidden;flex-shrink:0}
+.iq-panel-header{display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;
+  font-size:18px;font-weight:700;color:var(--t2);letter-spacing:.6px;user-select:none}
+.iq-panel-header:active{background:rgba(255,255,255,.03)}
+.iq-chev{display:inline-block;font-size:15px;color:var(--t3);transition:transform .25s}
+.iq-panel:not(.collapsed) .iq-chev{transform:rotate(90deg)}
+.iq-panel-title{flex:1}
+/* Expanded body has a bounded max-height + internal scrolling so the panel
+   stays within the space between viewport bottom and the tab bar even when
+   all four sliders + reset overflow vertically. */
+.iq-panel-body{padding:6px 0 10px;border-top:1px solid var(--border);max-height:240px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.2) transparent}
+.iq-panel-body::-webkit-scrollbar{width:5px}
+.iq-panel-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:2px}
+.iq-panel.collapsed .iq-panel-body{display:none}
+/* When IQ panel expands, hide the warning bar + shutter so the panel can use
+   the full bottom-panel space without overflowing under the demo controls.
+   The five demo trigger buttons (BSD/RCW/傾倒/清除) are also hidden so the
+   adjustment surface is uncluttered while the user tunes image quality. */
+.bottom-panel:has(.iq-panel:not(.collapsed)) .gps-bar,
+.bottom-panel:has(.iq-panel:not(.collapsed)) .shutter-row{display:none}
+.liveview:has(.iq-panel:not(.collapsed)) .demo-wrap{display:none}
+.iq-slider{padding:10px 14px 12px}
+.iq-slider+.iq-slider{border-top:1px solid var(--border)}
+.iq-slider .slider-label{display:flex;justify-content:space-between;
+  font-size:20px;color:var(--t2);margin-bottom:10px}
+.iq-slider .slider-val{color:var(--brand);font-weight:700;font-variant-numeric:tabular-nums}
+.iq-slider .sl-track{height:5px;background:var(--bg4);border-radius:3px;position:relative;cursor:pointer;touch-action:none}
+.iq-slider .sl-fill{height:100%;border-radius:3px;background:linear-gradient(to right,var(--brand),rgba(170,204,3,.7));pointer-events:none}
+.iq-slider .sl-thumb{width:16px;height:16px;border-radius:8px;background:#fff;border:2px solid var(--brand);
+  position:absolute;top:-6px;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.4);touch-action:none}
+.iq-reset-row{display:flex;justify-content:flex-end;padding:4px 14px 6px}
+.iq-reset-btn{font-size:18px;color:var(--t2);background:var(--bg4);padding:6px 14px;
+  border-radius:6px;cursor:pointer;border:1px solid var(--border)}
+.iq-reset-btn:active{background:rgba(255,255,255,.1)}
+
+/* Demo controls — horizontal row at the very bottom of live view (no longer overlapping cam-feed) */
+.demo-wrap{position:absolute;bottom:10px;left:14px;right:14px;display:flex;flex-direction:row;
+  justify-content:center;flex-wrap:wrap;gap:6px;z-index:50}
+.dbtn{padding:5px 10px;border-radius:6px;font-size:14px;font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;cursor:pointer;border:1px solid transparent;transition:all .12s;font-family:var(--font)}
+.dbtn-bsd{background:rgba(255,159,10,.14);border-color:rgba(255,159,10,.4);color:var(--orange)}
+.dbtn-bsd:active{background:rgba(255,159,10,.28)}
+.dbtn-rcw{background:rgba(255,68,68,.14);border-color:rgba(255,68,68,.4);color:var(--red)}
+.dbtn-rcw:active{background:rgba(255,68,68,.28)}
+.dbtn-clr{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.1);color:var(--t3)}
+.dbtn-tilt{background:rgba(255,68,68,.14);border-color:rgba(255,68,68,.4);color:#FF5864}
+.dbtn-tilt:active{background:rgba(255,68,68,.28)}
+
+/* ── Scene objects (user bike + rear traffic) ── */
+.scene-objects{position:absolute;inset:0;z-index:12;pointer-events:none}
+.scene-objects img{position:absolute;height:auto;display:block}
+.user-moto{top:58%;left:50%;transform:translate(-50%,-50%);width:42px;opacity:.95;
+  filter:drop-shadow(0 3px 6px rgba(0,0,0,.75)) drop-shadow(0 0 10px var(--brand40))}
+.t-l-far{bottom:30%;left:30%;transform:translateX(-50%);width:30px;opacity:.78;
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,.55))}
+.t-r-near{bottom:12%;right:10%;width:36px;
+  filter:drop-shadow(0 4px 10px rgba(0,0,0,.75))}
+</style>
+</head>
+<body>
+<div class="frame">
+<div class="phone">
+
+  <!-- Dynamic Island -->
+  <div class="dynisland"><div class="di-dot pulse"></div><span class="di-txt">REC</span></div>
+
+  <!-- Status Bar -->
+  <div class="sbar">
+    <span class="stime" id="stime">9:41</span>
+    <div class="sicons">
+      <svg width="17" height="12" viewBox="0 0 17 12" fill="none"><rect x="0" y="8" width="3" height="4" rx=".5" fill="white"/><rect x="4.5" y="5.5" width="3" height="6.5" rx=".5" fill="white"/><rect x="9" y="2.5" width="3" height="9.5" rx=".5" fill="white"/><rect x="13.5" y="0" width="3" height="12" rx=".5" fill="white" opacity=".3"/></svg>
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><path d="M8 9.5a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5z" fill="white"/><path d="M4.8 7a4.5 4.5 0 0 1 6.4 0" stroke="white" stroke-width="1.4" stroke-linecap="round"/><path d="M1.8 4a8.4 8.4 0 0 1 12.4 0" stroke="white" stroke-width="1.4" stroke-linecap="round" opacity=".45"/></svg>
+      <div class="bat"><div class="bat-body"><div class="bat-fill"></div></div></div>
+    </div>
+  </div>
+
+  <!-- Content: Live View -->
+  <div class="content">
+    <div class="liveview">
+
+      <!-- BSD / RCW side-light overlays — gradient stripes only, no inline text -->
+      <div class="bsd-overlay bsd-l bsd" id="bsd-l"><div class="bsd-stripe"></div></div>
+      <div class="bsd-overlay bsd-r bsd" id="bsd-r"><div class="bsd-stripe"></div></div>
+
+      <!-- Header band: big speed readout (logo + REC removed from here) -->
+      <div class="live-logo">
+        <div class="speed-panel">
+          <span class="hspd" id="hud-speed">0</span>
+          <span class="hunit">km/h</span>
+        </div>
+      </div>
+
+      <!-- 16:9 camera feed (rear-facing MotoCam) — vertically centered on phone screen -->
+      <div class="cam-feed">
+
+        <!-- Inner scene: rotates for fall. Frame stays still. -->
+        <div class="cam-scene" id="cam-scene">
+
+          <!-- Camera scene SVG -->
+          <svg class="cam-svg" viewBox="0 0 390 220" preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <radialGradient id="skyG" cx="50%" cy="40%" r="75%"><stop offset="0%" stop-color="#1a1f2e"/><stop offset="100%" stop-color="#06080f"/></radialGradient>
+              <linearGradient id="roadG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1a1a1a"/><stop offset="100%" stop-color="#2a2a2a"/></linearGradient>
+              <radialGradient id="vig" cx="50%" cy="50%" r="75%"><stop offset="60%" stop-color="transparent"/><stop offset="100%" stop-color="rgba(0,0,0,.7)"/></radialGradient>
+              <!-- Horizon brand glow -->
+              <linearGradient id="horizGlow" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="transparent"/><stop offset="50%" stop-color="rgba(170,204,3,.4)"/><stop offset="100%" stop-color="transparent"/>
+              </linearGradient>
+              <!-- Center-lane perspective gradient: dim at horizon, glows near viewer -->
+              <linearGradient id="laneStripG" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%"  stop-color="rgba(170,204,3,0)"/>
+                <stop offset="30%" stop-color="rgba(170,204,3,.10)"/>
+                <stop offset="100%" stop-color="rgba(170,204,3,.35)"/>
+              </linearGradient>
+              <!-- Dashed lane edges -->
+              <linearGradient id="laneEdgeG" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%"  stop-color="rgba(255,255,255,.08)"/>
+                <stop offset="100%" stop-color="rgba(255,255,255,.6)"/>
+              </linearGradient>
+            </defs>
+
+            <!-- Sky + road base -->
+            <rect width="390" height="220" fill="url(#skyG)"/>
+            <rect x="0" y="110" width="390" height="110" fill="url(#roadG)"/>
+
+            <!-- Far vanishing lines (side lanes) -->
+            <line x1="160" y1="110" x2="30"  y2="220" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
+            <line x1="230" y1="110" x2="360" y2="220" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
+
+            <!-- Outer shoulder lines -->
+            <line x1="150" y1="110" x2="-20"  y2="220" stroke="rgba(255,255,255,.04)" stroke-width="1"/>
+            <line x1="240" y1="110" x2="410" y2="220" stroke="rgba(255,255,255,.04)" stroke-width="1"/>
+
+            <!-- Horizon brand glow strip -->
+            <rect x="0" y="107" width="390" height="6" fill="url(#horizGlow)"/>
+
+            <!-- Center lane perspective strip — wider at horizon, widens further to viewer -->
+            <polygon points="170,110 220,110 275,220 115,220" fill="url(#laneStripG)"/>
+
+            <!-- Center lane dashed markers (ultra-slim tapered trapezoids — ref.html style) -->
+            <polygon points="194.2,122 195.8,122 195.9,131 194.1,131" fill="rgba(255,255,255,.35)"/>
+            <polygon points="193.3,146 196.7,146 196.85,160 193.15,160" fill="rgba(255,255,255,.55)"/>
+            <polygon points="191.5,178 198.5,178 198.8,198 191.2,198" fill="rgba(255,255,255,.78)"/>
+
+            <!-- Center-lane inner edges (soft gradient) -->
+            <line x1="170" y1="110" x2="115" y2="220" stroke="url(#laneEdgeG)" stroke-width="1.2" opacity=".7"/>
+            <line x1="220" y1="110" x2="275" y2="220" stroke="url(#laneEdgeG)" stroke-width="1.2" opacity=".7"/>
+
+            <!-- Distant buildings / silhouettes -->
+            <rect x="8" y="90" width="38" height="22" fill="rgba(255,255,255,.03)"/>
+            <rect x="50" y="82" width="22" height="30" fill="rgba(255,255,255,.025)"/>
+            <rect x="300" y="92" width="32" height="20" fill="rgba(255,255,255,.03)"/>
+            <rect x="338" y="84" width="22" height="28" fill="rgba(255,255,255,.025)"/>
+
+            <!-- Stars -->
+            <circle cx="75" cy="35" r="1" fill="rgba(255,255,255,.4)"/>
+            <circle cx="305" cy="25" r="1.2" fill="rgba(255,255,255,.5)"/>
+            <circle cx="185" cy="50" r=".8" fill="rgba(255,255,255,.3)"/>
+            <circle cx="135" cy="68" r="1" fill="rgba(255,255,255,.28)"/>
+            <circle cx="285" cy="60" r=".9" fill="rgba(255,255,255,.28)"/>
+
+            <!-- REC timestamp -->
+            <circle cx="18" cy="208" r="3" fill="#FF4444"><animate attributeName="opacity" values=".9;.2;.9" dur="1.8s" repeatCount="indefinite"/></circle>
+            <text x="30" y="213" font-family="'SF Mono',monospace" font-size="14" fill="rgba(255,255,255,.42)" id="cam-ts">2025-07-15  21:34:07</text>
+
+            <!-- Vignette -->
+            <rect width="390" height="220" fill="url(#vig)"/>
+          </svg>
+
+          <!-- Simulated scene: user bike + rear traffic (L moto, R car) -->
+          <div class="scene-objects">
+            <img class="user-moto" src="assets/images/user-moto.png" alt="使用者機車">
+            <img class="traffic t-l-far"  src="assets/images/object-moto.png" alt="">
+            <img class="traffic t-r-near" src="assets/images/object-car.png"  alt="">
+          </div>
+
+        </div><!-- /cam-scene -->
+
+        <div class="top-fade"></div>
+        <div class="bot-fade"></div>
+
+        <!-- REC badge — top-right inside cam-feed; toggles between idle ↔ recording -->
+        <div class="rec-badge idle" id="rec-badge"><div class="rb-dot"></div><span class="rb-txt" id="rb-txt">未錄影</span></div>
+
+        <!-- Fullscreen toggle — bottom-right inside cam-feed -->
+        <button class="fs-btn" onclick="toggleFullscreen(event)" aria-label="全螢幕">
+          <svg class="fs-icon-enter" width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <svg class="fs-icon-exit" width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M9 4v5H4M20 9h-5V4M9 20v-5H4M20 15h-5v5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+
+        <!-- Critical flash (fall) -->
+        <div class="crit-flash" id="crit-flash"></div>
+
+        <!-- Shutter flash -->
+        <div class="shot-flash" id="shot-flash"></div>
+
+        <!-- Fall detection overlay (in-frame, no device rotation) -->
+        <div class="fall-overlay" id="fall-overlay">
+          <div class="fall-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2.5L2.5 20.5h19L12 2.5z" stroke="#FF5864" stroke-width="2" stroke-linejoin="round"/><path d="M12 9v5.5" stroke="#FF5864" stroke-width="2.5" stroke-linecap="round"/><circle cx="12" cy="17.8" r="1.3" fill="#FF5864"/></svg>
+          </div>
+          <div class="fall-title">車輛傾倒 FALL</div>
+          <div class="fall-meta">
+            <span>傾角 <b id="fall-angle">43°</b></span>
+            <span class="fm-sep">·</span>
+            <span>持續 <b id="fall-dur">3.2s</b></span>
+          </div>
+          <div class="fall-actions">
+            <button class="fall-btn fall-btn-saving" onclick="clearAll()">
+              <span class="fall-rec-dot"></span>保護錄影紀錄中…
+            </button>
+          </div>
+        </div>
+
+      </div><!-- /cam-feed -->
+
+      <!-- Demo buttons (absolute, right side) -->
+      <div class="demo-wrap">
+        <button class="dbtn dbtn-bsd"  onclick="trigger('bsd','left')">BSD 左</button>
+        <button class="dbtn dbtn-bsd"  onclick="trigger('bsd','right')">BSD 右</button>
+        <button class="dbtn dbtn-rcw"  onclick="trigger('rcw','both')">RCW</button>
+        <button class="dbtn dbtn-tilt" onclick="triggerTilt()">傾倒</button>
+        <button class="dbtn dbtn-clr"  onclick="clearAll()">清除</button>
+      </div>
+
+      <!-- Bottom panel: IQ panel + warning bar + centered shutter button -->
+      <div class="bottom-panel">
+
+        <!-- Image-quality collapsible panel — live preview against the viewport above
+             (pattern adapted from babycam demo·testing) -->
+        <div class="iq-panel collapsed" id="iqPanel">
+          <div class="iq-panel-header" onclick="document.getElementById('iqPanel').classList.toggle('collapsed')">
+            <span class="iq-chev">▸</span>
+            <span class="iq-panel-title">畫質調整</span>
+          </div>
+          <div class="iq-panel-body">
+            <div class="iq-slider" data-key="iq_brightness" data-min="-64" data-max="64" data-default="0" data-step="1">
+              <div class="slider-label"><span>亮度</span><span class="slider-val">0</span></div>
+              <div class="sl-track"><div class="sl-fill"></div><div class="sl-thumb"></div></div>
+            </div>
+            <div class="iq-slider" data-key="iq_contrast" data-min="0" data-max="100" data-default="50" data-step="1">
+              <div class="slider-label"><span>對比</span><span class="slider-val">50</span></div>
+              <div class="sl-track"><div class="sl-fill"></div><div class="sl-thumb"></div></div>
+            </div>
+            <div class="iq-slider" data-key="iq_saturation" data-min="0" data-max="100" data-default="50" data-step="1">
+              <div class="slider-label"><span>飽和度</span><span class="slider-val">50</span></div>
+              <div class="sl-track"><div class="sl-fill"></div><div class="sl-thumb"></div></div>
+            </div>
+            <div class="iq-slider" data-key="iq_sharpeness" data-min="0" data-max="100" data-default="50" data-step="1">
+              <div class="slider-label"><span>銳利度</span><span class="slider-val">50</span></div>
+              <div class="sl-track"><div class="sl-fill"></div><div class="sl-thumb"></div></div>
+            </div>
+            <div class="iq-reset-row"><button class="iq-reset-btn" id="iq-reset">恢復預設</button></div>
+          </div>
+        </div>
+
+        <!-- Warning bar — auto-rotates through outstanding advisories -->
+        <div class="gps-bar" aria-live="polite">
+          <div class="gps-dot"></div>
+          <div class="gps-rotator">
+            <div class="gps-stack" id="gpsStack">
+              <div class="gps-msg">提醒：目前未啟動錄影，請留意。</div>
+              <div class="gps-msg">提醒：目前未啟動 BSD 事件錄影，請留意。</div>
+              <div class="gps-msg">提醒：目前未啟動 RCW 事件錄影，請留意。</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Single centered shutter button (camera icon from index-0417.html) -->
+        <div class="shutter-row">
+          <button class="shutter-btn" onclick="shoot()" aria-label="截圖">
+            <img src="assets/icons/btn_shutter.svg" alt="">
+          </button>
+        </div>
+      </div><!-- /bottom-panel -->
+
+      <!-- Alert Banner — absolute, just above the tab bar -->
+      <div class="alert-banner" id="alert-banner">
+        <div class="ab-icon-wrap" id="ab-icon"></div>
+        <div class="ab-body">
+          <div class="ab-title" id="ab-title">盲點警示</div>
+          <div class="ab-sub"   id="ab-sub">左後方偵測到車輛接近</div>
+        </div>
+        <span class="ab-time" id="ab-time">21:34</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Tab Bar -->
+  <nav class="nav">
+    <!-- Home (active) -->
+    <div class="ni on" onclick="location.href='index.html'">
+      <div class="ni-icon">
+        <img src="assets/icons/icon_home_active.svg" alt="首頁"
+          onerror="this.outerHTML='<svg width=\'26\' height=\'26\' viewBox=\'0 0 24 24\' fill=\'none\'><path d=\'M3 9.5L12 3l9 6.5V21a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z\' stroke=\'#AACC03\' stroke-width=\'1.7\' stroke-linejoin=\'round\' fill=\'rgba(170,204,3,.12)\'/><path d=\'M9 22V13h6v9\' stroke=\'#AACC03\' stroke-width=\'1.7\' stroke-linejoin=\'round\'/></svg>'">
+      </div>
+    </div>
+    <!-- Alerts -->
+    <div class="ni" onclick="location.href='alerts.html'" style="position:relative">
+      <div class="ni-icon">
+        <img src="assets/icons/icon_alert.svg" alt="觸發事件"
+          onerror="this.outerHTML='<svg width=\'26\' height=\'26\' viewBox=\'0 0 24 24\' fill=\'none\'><path d=\'M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z\' stroke=\'rgba(255,255,255,.4)\' stroke-width=\'1.7\' stroke-linejoin=\'round\'/><path d=\'M12 9v4\' stroke=\'rgba(255,255,255,.4)\' stroke-width=\'2\' stroke-linecap=\'round\'/><circle cx=\'12\' cy=\'17\' r=\'1\' fill=\'rgba(255,255,255,.4)\'/></svg>'">
+      </div>
+    </div>
+    <!-- Playback -->
+    <div class="ni" onclick="location.href='playback.html'">
+      <div class="ni-icon">
+        <img src="assets/icons/icon_playback.svg" alt="回放"
+          onerror="this.outerHTML='<svg width=\'26\' height=\'26\' viewBox=\'0 0 24 24\' fill=\'none\'><rect x=\'2\' y=\'4\' width=\'15\' height=\'16\' rx=\'2\' stroke=\'rgba(255,255,255,.4)\' stroke-width=\'1.7\'/><path d=\'M17 8.5l5-3v13l-5-3V8.5z\' stroke=\'rgba(255,255,255,.4)\' stroke-width=\'1.7\' stroke-linejoin=\'round\'/><path d=\'M7 9.5l5 3-5 3v-6z\' fill=\'rgba(255,255,255,.4)\'/></svg>'">
+      </div>
+    </div>
+    <!-- Settings -->
+    <div class="ni" onclick="location.href='settings.html'">
+      <div class="ni-icon">
+        <img src="assets/icons/icon_settings.svg" alt="設定"
+          onerror="this.outerHTML='<svg width=\'26\' height=\'26\' viewBox=\'0 0 24 24\' fill=\'none\'><circle cx=\'12\' cy=\'12\' r=\'3\' stroke=\'rgba(255,255,255,.4)\' stroke-width=\'1.6\'/><path d=\'M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z\' stroke=\'rgba(255,255,255,.4)\' stroke-width=\'1.6\'/></svg>'">
+      </div>
+    </div>
+  </nav>
+
+</div>
+</div>
+
+<script>
+// Clock
+function tick(){const n=new Date();document.getElementById('stime').textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')}
+tick();setInterval(tick,10000);
+
+// Cam timestamp
+function tickCam(){const n=new Date(),p=x=>String(x).padStart(2,'0');
+  document.getElementById('cam-ts').textContent=n.getFullYear()+'-'+p(n.getMonth()+1)+'-'+p(n.getDate())+'  '+p(n.getHours())+':'+p(n.getMinutes())+':'+p(n.getSeconds())}
+tickCam();setInterval(tickCam,1000);
+
+// Speed simulation (drives both HUD and telemetry)
+let spd=0,spdDir=1;
+setInterval(()=>{spd+=spdDir*(Math.random()*2);if(spd>65){spdDir=-1}if(spd<0){spd=0;spdDir=1}
+  const v=Math.round(spd);
+  document.getElementById('hud-speed').textContent=v;
+  document.getElementById('tele-speed').textContent=v;
+},200);
+
+// Snapshot
+function shoot(){
+  const f=document.getElementById('shot-flash');
+  f.classList.remove('fire');
+  void f.offsetWidth;
+  f.classList.add('fire');
+}
+
+// Alert
+let autoT=null,fallT=null;
+const ICONS={
+  bsd:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#FF9F0A" stroke-width="1.8"/><path d="M12 7v6" stroke="#FF9F0A" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.2" fill="#FF9F0A"/></svg>`,
+  rcw:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke="#FF4444" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 9v4" stroke="#FF4444" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.2" fill="#FF4444"/></svg>`,
+  tilt:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2.5L2.5 20.5h19L12 2.5z" stroke="#FF5864" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 9v5.5" stroke="#FF5864" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17.8" r="1.2" fill="#FF5864"/></svg>`
+};
+const CFG={
+  bsd:{title:'盲點警示 BSD',sub:{left:'左後方偵測到車輛接近',right:'右後方偵測到車輛接近',both:'兩側同時偵測到車輛'}},
+  // RCW is rear-collision: no left/right split — it always refers to the area
+  // directly behind the rider.
+  rcw:{title:'後方防撞警示 RCW',sub:{both:'正後方車輛快速接近，請注意'}},
+  tilt:{title:'異常傾倒警示 FALL'}
+};
+
+function setTime(){const n=new Date();document.getElementById('ab-time').textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')}
+
+// Fullscreen toggle — landscape full-bleed view of the cam-feed.
+// Also flag the phone wrapper so CSS can hide the bottom tab bar.
+function toggleFullscreen(e){
+  if(e)e.stopPropagation();
+  const lv=document.querySelector('.liveview');
+  lv.classList.toggle('fullscreen');
+  document.querySelector('.phone').classList.toggle('live-full',lv.classList.contains('fullscreen'));
+}
+
+// Recording state — only red REC during BSD/RCW/fall events; idle otherwise.
+function setRec(recording){
+  const b=document.getElementById('rec-badge');
+  b.classList.toggle('idle',!recording);
+  document.getElementById('rb-txt').textContent=recording?'REC':'未錄影';
+}
+
+function trigger(type,side){
+  clearAll(false);
+  const bL=document.getElementById('bsd-l'),bR=document.getElementById('bsd-r');
+  bL.className='bsd-overlay bsd-l '+type;bR.className='bsd-overlay bsd-r '+type;
+  if(side==='left'||side==='both'){bL.classList.add('show')}
+  if(side==='right'||side==='both'){bR.classList.add('show')}
+  const b=document.getElementById('alert-banner');
+  b.className='alert-banner '+type;
+  document.getElementById('ab-icon').innerHTML=ICONS[type];
+  document.getElementById('ab-title').textContent=CFG[type].title;
+  document.getElementById('ab-sub').textContent=CFG[type].sub[side]||CFG[type].sub.both;
+  setTime();
+  setRec(true);
+  requestAnimationFrame(()=>b.classList.add('show'));
+  autoT=setTimeout(()=>clearAll(),5500);
+}
+
+function triggerTilt(){
+  clearAll(false);
+  // Rotate only the inner scene (not the device frame)
+  document.getElementById('cam-scene').classList.add('fall');
+  document.getElementById('crit-flash').classList.add('show');
+  const deg=39+Math.floor(Math.random()*18);
+  document.getElementById('fall-angle').textContent=deg+'°';
+  document.getElementById('fall-dur').textContent=(3+Math.random()*1.4).toFixed(1)+'s';
+  document.getElementById('fall-overlay').classList.add('show');
+  // Supporting alert banner (so it still surfaces in alert history)
+  const b=document.getElementById('alert-banner');
+  b.className='alert-banner tilt';
+  document.getElementById('ab-icon').innerHTML=ICONS.tilt;
+  document.getElementById('ab-title').textContent=CFG.tilt.title;
+  document.getElementById('ab-sub').textContent='傾角 '+deg+'° · 保護錄影紀錄中…';
+  setTime();
+  setRec(true);
+  requestAnimationFrame(()=>b.classList.add('show'));
+  // No auto-clear: overlay stays until the rider taps the saving-status button
+}
+
+function clearAll(anim=true){
+  if(autoT){clearTimeout(autoT);autoT=null}
+  if(fallT){clearInterval(fallT);fallT=null}
+  document.getElementById('bsd-l').classList.remove('show');
+  document.getElementById('bsd-r').classList.remove('show');
+  document.getElementById('alert-banner').classList.remove('show');
+  const cs=document.getElementById('cam-scene');
+  cs.classList.remove('fall');
+  document.getElementById('crit-flash').classList.remove('show');
+  document.getElementById('fall-overlay').classList.remove('show');
+  setRec(false);
+}
+
+// Auto demo
+setTimeout(()=>trigger('bsd','left'),2200);
+
+// ---- Image-quality sliders (live preview against viewport above) ----
+function initIQSlider(wrap){
+  const min = parseFloat(wrap.dataset.min);
+  const max = parseFloat(wrap.dataset.max);
+  const def = parseFloat(wrap.dataset.default);
+  const track = wrap.querySelector('.sl-track');
+  const fill  = wrap.querySelector('.sl-fill');
+  const thumb = wrap.querySelector('.sl-thumb');
+  const valEl = wrap.querySelector('.slider-val');
+
+  function render(value){
+    value = Math.max(min, Math.min(max, value));
+    const pct = ((value - min) / (max - min)) * 100;
+    fill.style.width = pct + '%';
+    thumb.style.left = `calc(${pct}% - 8px)`;
+    valEl.textContent = value;
+    wrap.dataset.value = value;
+  }
+  render(def);
+
+  function setFromEvent(e){
+    const r = track.getBoundingClientRect();
+    const cx = (e.touches && e.touches[0]) ? e.touches[0].clientX : e.clientX;
+    const pct = Math.max(0, Math.min(1, (cx - r.left) / r.width));
+    render(Math.round(min + pct * (max - min)));
+  }
+  track.addEventListener('click', setFromEvent);
+
+  let drag = false;
+  thumb.addEventListener('pointerdown', e => { drag = true; thumb.setPointerCapture(e.pointerId); });
+  thumb.addEventListener('pointermove', e => { if (drag) setFromEvent(e); });
+  thumb.addEventListener('pointerup',   () => { drag = false; });
+
+  wrap._reset = () => render(def);
+}
+document.querySelectorAll('.iq-slider').forEach(initIQSlider);
+
+document.getElementById('iq-reset').addEventListener('click', e => {
+  e.stopPropagation();
+  document.querySelectorAll('.iq-slider').forEach(s => s._reset && s._reset());
+});
+
+// ---- Warning bar: vertical-flip rotator ----
+// Cycle through the recording advisories every 3.8s. We clone the first
+// message to the end of the stack so the wrap-around looks continuous —
+// after the transition lands on the clone we snap-reset to index 0 with
+// no transition, ready for the next forward step.
+(function(){
+  const stack=document.getElementById('gpsStack');
+  if(!stack)return;
+  const original=Array.from(stack.children);
+  if(original.length<2)return;
+  stack.appendChild(original[0].cloneNode(true));
+  const rowH=original[0].getBoundingClientRect().height||24;
+  const totalSteps=original.length;  // steps before snap-reset
+  let idx=0;
+  function step(){
+    idx++;
+    stack.style.transition='transform .55s cubic-bezier(.34,1.56,.64,1)';
+    stack.style.transform='translateY('+(-idx*rowH)+'px)';
+    if(idx>=totalSteps){
+      setTimeout(()=>{
+        stack.style.transition='none';
+        stack.style.transform='translateY(0px)';
+        idx=0;
+      },620);
+    }
+  }
+  setInterval(step,3800);
+})();
+</script>
+</body>
+</html>
