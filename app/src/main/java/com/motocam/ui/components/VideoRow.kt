@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,7 +20,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.unit.dp
 import com.motocam.ui.theme.LocalSpacing
 import com.motocam.ui.theme.MotoColors
 
@@ -58,7 +56,7 @@ fun VideoRow(
     val rowModifier = modifier
         .clip(MaterialTheme.shapes.large)
         .background(MotoColors.Surface)
-        .border(1.dp, MotoColors.Outline, MaterialTheme.shapes.large)
+        .border(spacing.hairline, MotoColors.Outline, MaterialTheme.shapes.large)
         .let { if (onClick != null) it.clickable(onClick = onClick) else it }
         .padding(spacing.md)
 
@@ -105,7 +103,7 @@ private fun Thumbnail(painter: Painter?, duration: String?) {
     val spacing = LocalSpacing.current
     Box(
         modifier = Modifier
-            .size(width = 88.dp, height = 56.dp)
+            .size(width = spacing.thumbWidth, height = spacing.thumbHeight)
             .clip(MaterialTheme.shapes.small)
             .background(Color(0xFF0A0A0C)),
     ) {
@@ -113,14 +111,14 @@ private fun Thumbnail(painter: Painter?, duration: String?) {
             Image(
                 painter = painter,
                 contentDescription = null,
-                modifier = Modifier.size(width = 88.dp, height = 56.dp),
+                modifier = Modifier.size(width = spacing.thumbWidth, height = spacing.thumbHeight),
                 contentScale = ContentScale.Crop,
             )
         }
         Box(
             modifier = Modifier
                 .align(Alignment.Center)
-                .size(24.dp)
+                .size(spacing.iconSm)
                 .clip(CircleShape)
                 .background(Color(0xA6000000)),
             contentAlignment = Alignment.Center,
@@ -136,9 +134,9 @@ private fun Thumbnail(painter: Painter?, duration: String?) {
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(spacing.xs)
-                    .clip(RoundedCornerShape(4.dp))
+                    .clip(MaterialTheme.shapes.extraSmall)
                     .background(Color(0xB3000000))
-                    .padding(horizontal = spacing.xs, vertical = 1.dp),
+                    .padding(horizontal = spacing.xs, vertical = spacing.hairline),
             ) {
                 Text(
                     text = duration,
@@ -157,7 +155,7 @@ private fun TagPill(tag: VideoTag) {
         modifier = Modifier
             .clip(MaterialTheme.shapes.extraLarge)
             .background(tag.style.background)
-            .padding(horizontal = spacing.sm, vertical = 1.dp),
+            .padding(horizontal = spacing.sm, vertical = spacing.hairline),
     ) {
         Text(
             text = tag.label,
