@@ -6,7 +6,11 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.compose.foundation.layout.Box
@@ -28,14 +32,18 @@ class MainActivity : ComponentActivity() {
 fun MotoCamApp() {
     MotoTheme {
         val navController = rememberNavController()
+        var selectedRoute by rememberSaveable { mutableStateOf("home") }
         val backStackEntry by navController.currentBackStackEntryAsState()
-        val currentRoute = backStackEntry?.destination?.route ?: "home"
+        LaunchedEffect(backStackEntry) {
+            backStackEntry?.destination?.route?.let { selectedRoute = it }
+        }
         Scaffold(
             bottomBar = {
                 BottomNavBar(
-                    selected = currentRoute,
+                    selected = selectedRoute,
                     onSelect = { route ->
-                        if (route != currentRoute) {
+                        if (route != selectedRoute) {
+                            selectedRoute = route
                             navController.navigate(route) {
                                 popUpTo(navController.graph.startDestinationId) { saveState = true }
                                 launchSingleTop = true
