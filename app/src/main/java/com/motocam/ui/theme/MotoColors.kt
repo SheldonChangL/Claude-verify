@@ -17,7 +17,7 @@ object MotoColors {
     val Outline = Color(0x14FFFFFF)
 }
 
-val MotoDarkColorScheme: ColorScheme = darkColorScheme(
+val darkScheme: ColorScheme = darkColorScheme(
     primary = MotoColors.Accent,
     onPrimary = MotoColors.OnAccent,
     secondary = MotoColors.Success,
