@@ -30,11 +30,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.motocam.R
 import com.motocam.ui.Strings
 import com.motocam.ui.theme.MotoTheme
@@ -70,6 +68,7 @@ fun HomeScreen(state: HomeUiState = HomeUiState.mock()) {
 @Composable
 private fun StatusBar(clock: String, recording: Boolean) {
     val scheme = MaterialTheme.colorScheme
+    val typo = MaterialTheme.typography
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -79,8 +78,7 @@ private fun StatusBar(clock: String, recording: Boolean) {
         Text(
             text = clock,
             color = scheme.onBackground,
-            fontSize = 15.sp,
-            fontWeight = FontWeight.SemiBold,
+            style = typo.bodyLarge,
             modifier = Modifier.weight(1f),
         )
         Box(
@@ -101,8 +99,7 @@ private fun StatusBar(clock: String, recording: Boolean) {
                 Text(
                     text = Strings.REC,
                     color = scheme.onBackground,
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Bold,
+                    style = typo.labelSmall,
                 )
             }
         }
@@ -112,6 +109,7 @@ private fun StatusBar(clock: String, recording: Boolean) {
 @Composable
 private fun SpeedHero(speed: Int, unit: String) {
     val scheme = MaterialTheme.colorScheme
+    val typo = MaterialTheme.typography
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -121,15 +119,13 @@ private fun SpeedHero(speed: Int, unit: String) {
         Text(
             text = speed.toString(),
             color = scheme.primary,
-            fontSize = 96.sp,
-            fontWeight = FontWeight.Black,
+            style = typo.displayLarge,
         )
         Spacer(Modifier.width(10.dp))
         Text(
             text = unit,
             color = scheme.primary,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
+            style = typo.headlineLarge,
             modifier = Modifier.padding(bottom = 14.dp),
         )
     }
@@ -138,6 +134,7 @@ private fun SpeedHero(speed: Int, unit: String) {
 @Composable
 private fun CameraViewportCard(camera: CameraOverlayState) {
     val scheme = MaterialTheme.colorScheme
+    val typo = MaterialTheme.typography
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -196,8 +193,7 @@ private fun CameraViewportCard(camera: CameraOverlayState) {
                 Text(
                     text = camera.recBadgeText,
                     color = scheme.onBackground,
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Bold,
+                    style = typo.labelSmall,
                 )
             }
         }
@@ -205,7 +201,7 @@ private fun CameraViewportCard(camera: CameraOverlayState) {
         Text(
             text = camera.timestamp,
             color = scheme.tertiary,
-            fontSize = 11.sp,
+            style = typo.bodySmall,
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .padding(start = 10.dp, bottom = 8.dp),
@@ -224,7 +220,7 @@ private fun CameraViewportCard(camera: CameraOverlayState) {
             Text(
                 text = Strings.FULLSCREEN_GLYPH,
                 color = scheme.onBackground,
-                fontSize = 14.sp,
+                style = typo.titleSmall,
             )
         }
     }
@@ -233,6 +229,7 @@ private fun CameraViewportCard(camera: CameraOverlayState) {
 @Composable
 private fun AlertBannerCard(banner: AlertBannerState) {
     val scheme = MaterialTheme.colorScheme
+    val typo = MaterialTheme.typography
     val accent: Color = when (banner.kind) {
         AlertBannerKind.BSD -> scheme.tertiary
         AlertBannerKind.RCW -> scheme.error
@@ -256,27 +253,26 @@ private fun AlertBannerCard(banner: AlertBannerState) {
                 .background(accent.copy(alpha = 0.18f)),
             contentAlignment = Alignment.Center,
         ) {
-            Text(text = "!", color = accent, fontSize = 17.sp, fontWeight = FontWeight.Black)
+            Text(text = "!", color = accent, style = typo.titleMedium)
         }
         Spacer(Modifier.width(10.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = banner.title,
                 color = accent,
-                fontSize = 17.sp,
-                fontWeight = FontWeight.Black,
+                style = typo.titleMedium,
             )
             Spacer(Modifier.height(2.dp))
             Text(
                 text = banner.subtitle,
                 color = scheme.onBackground.copy(alpha = 0.55f),
-                fontSize = 13.sp,
+                style = typo.bodyMedium,
             )
         }
         Text(
             text = banner.time,
             color = scheme.onBackground.copy(alpha = 0.3f),
-            fontSize = 13.sp,
+            style = typo.bodyMedium,
         )
     }
 }
@@ -284,6 +280,7 @@ private fun AlertBannerCard(banner: AlertBannerState) {
 @Composable
 private fun ImageQualityRow(iq: ImageQualityState) {
     val scheme = MaterialTheme.colorScheme
+    val typo = MaterialTheme.typography
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -297,20 +294,19 @@ private fun ImageQualityRow(iq: ImageQualityState) {
         Text(
             text = Strings.ACCORDION_COLLAPSED_GLYPH,
             color = scheme.onSurfaceVariant,
-            fontSize = 13.sp,
+            style = typo.bodyMedium,
         )
         Spacer(Modifier.width(10.dp))
         Text(
             text = iq.title,
             color = scheme.onSurfaceVariant,
-            fontSize = 15.sp,
-            fontWeight = FontWeight.Bold,
+            style = typo.labelLarge,
             modifier = Modifier.weight(1f),
         )
         Text(
             text = Strings.IQ_SUBTITLE,
             color = scheme.onSurfaceVariant.copy(alpha = 0.6f),
-            fontSize = 11.sp,
+            style = typo.bodySmall,
         )
     }
 }
@@ -318,6 +314,7 @@ private fun ImageQualityRow(iq: ImageQualityState) {
 @Composable
 private fun ReminderStrip(text: String) {
     val scheme = MaterialTheme.colorScheme
+    val typo = MaterialTheme.typography
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -338,8 +335,7 @@ private fun ReminderStrip(text: String) {
         Text(
             text = text,
             color = scheme.onBackground,
-            fontSize = 15.sp,
-            fontWeight = FontWeight.SemiBold,
+            style = typo.bodyLarge,
             modifier = Modifier.weight(1f),
         )
     }
@@ -388,6 +384,7 @@ private fun AlertChipRow(chips: List<AlertChip>) {
 @Composable
 private fun AlertChipView(chip: AlertChip, modifier: Modifier = Modifier) {
     val scheme = MaterialTheme.colorScheme
+    val typo = MaterialTheme.typography
     val color = when (chip.kind) {
         AlertChipKind.BSD_LEFT, AlertChipKind.BSD_RIGHT -> scheme.tertiary
         AlertChipKind.RCW -> scheme.error
@@ -405,8 +402,7 @@ private fun AlertChipView(chip: AlertChip, modifier: Modifier = Modifier) {
         Text(
             text = chip.label,
             color = color,
-            fontSize = 13.sp,
-            fontWeight = FontWeight.Bold,
+            style = typo.labelMedium,
             textAlign = TextAlign.Center,
         )
     }

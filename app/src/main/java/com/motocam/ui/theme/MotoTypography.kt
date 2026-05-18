@@ -1,24 +1,70 @@
 package com.motocam.ui.theme
 
 import androidx.compose.material3.Typography
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 
-private fun Typography.withDefaultFontFamily(family: FontFamily): Typography = Typography(
-    displayLarge = displayLarge.copy(fontFamily = family),
-    displayMedium = displayMedium.copy(fontFamily = family),
-    displaySmall = displaySmall.copy(fontFamily = family),
-    headlineLarge = headlineLarge.copy(fontFamily = family),
-    headlineMedium = headlineMedium.copy(fontFamily = family),
-    headlineSmall = headlineSmall.copy(fontFamily = family),
-    titleLarge = titleLarge.copy(fontFamily = family),
-    titleMedium = titleMedium.copy(fontFamily = family),
-    titleSmall = titleSmall.copy(fontFamily = family),
-    bodyLarge = bodyLarge.copy(fontFamily = family),
-    bodyMedium = bodyMedium.copy(fontFamily = family),
-    bodySmall = bodySmall.copy(fontFamily = family),
-    labelLarge = labelLarge.copy(fontFamily = family),
-    labelMedium = labelMedium.copy(fontFamily = family),
-    labelSmall = labelSmall.copy(fontFamily = family),
-)
+object MotoTypography {
+    private val family: FontFamily = MotoFonts.primary
 
-val MotoTypography: Typography = Typography().withDefaultFontFamily(MotoFonts.primary)
+    val values: Typography = Typography(
+        displayLarge = TextStyle(
+            fontFamily = family,
+            fontSize = 96.sp,
+            fontWeight = FontWeight.Black,
+            lineHeight = 96.sp,
+        ),
+        headlineLarge = TextStyle(
+            fontFamily = family,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+        ),
+        titleLarge = TextStyle(
+            fontFamily = family,
+            fontSize = 21.sp,
+            fontWeight = FontWeight.Bold,
+        ),
+        titleMedium = TextStyle(
+            fontFamily = family,
+            fontSize = 17.sp,
+            fontWeight = FontWeight.Black,
+        ),
+        titleSmall = TextStyle(
+            fontFamily = family,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Normal,
+        ),
+        bodyLarge = TextStyle(
+            fontFamily = family,
+            fontSize = 15.sp,
+            fontWeight = FontWeight.SemiBold,
+        ),
+        bodyMedium = TextStyle(
+            fontFamily = family,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Normal,
+        ),
+        bodySmall = TextStyle(
+            fontFamily = family,
+            fontSize = 11.sp,
+            fontWeight = FontWeight.Normal,
+        ),
+        labelLarge = TextStyle(
+            fontFamily = family,
+            fontSize = 15.sp,
+            fontWeight = FontWeight.Bold,
+        ),
+        labelMedium = TextStyle(
+            fontFamily = family,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Bold,
+        ),
+        labelSmall = TextStyle(
+            fontFamily = family,
+            fontSize = 11.sp,
+            fontWeight = FontWeight.Bold,
+        ),
+    )
+}

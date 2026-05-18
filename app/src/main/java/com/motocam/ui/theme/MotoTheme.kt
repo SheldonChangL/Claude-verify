@@ -17,7 +17,7 @@ private val MotoRippleConfiguration = RippleConfiguration(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MotoTheme(content: @Composable () -> Unit) {
-    MaterialTheme(colorScheme = MotoColors.darkScheme, typography = MotoTypography) {
+    MaterialTheme(colorScheme = MotoColors.darkScheme, typography = MotoTypography.values) {
         CompositionLocalProvider(
             LocalRippleConfiguration provides MotoRippleConfiguration,
             content = content,
