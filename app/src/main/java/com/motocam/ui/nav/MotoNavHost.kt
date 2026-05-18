@@ -6,12 +6,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.motocam.ui.screens.home.HomeScreen
+import com.motocam.ui.screens.playback.PlaybackScreen
 
 @Composable
 fun MotoNavHost(navController: NavHostController) {
     NavHost(navController = navController, startDestination = "home") {
         composable("home") { HomeScreen() }
-        composable("playback") { Text("playback") }
+        composable("playback") { PlaybackScreen() }
         composable("alerts") { Text("alerts") }
         composable("settings") { Text("settings") }
     }
