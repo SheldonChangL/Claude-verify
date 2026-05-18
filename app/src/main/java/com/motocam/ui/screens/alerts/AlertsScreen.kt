@@ -30,7 +30,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.motocam.R
-import com.motocam.ui.Strings
 import com.motocam.ui.components.AlertIconType
 import com.motocam.ui.components.AlertRow
 import com.motocam.ui.theme.LocalSpacing
@@ -44,16 +43,16 @@ private data class AlertItem(
 )
 
 private val MockAlerts: List<AlertItem> = listOf(
-    AlertItem(AlertIconType.Bsd, Strings.ALERT_TITLE_BSD_LEFT, "9:46 PM"),
-    AlertItem(AlertIconType.Rcw, Strings.ALERT_TITLE_RCW, "9:32 PM"),
-    AlertItem(AlertIconType.Bsd, Strings.ALERT_TITLE_BSD_RIGHT, "9:05 PM"),
-    AlertItem(AlertIconType.Tilt, Strings.ALERT_TITLE_FALL, "8:31 PM"),
-    AlertItem(AlertIconType.Bsd, Strings.ALERT_TITLE_BSD_LEFT, "7:48 PM"),
-    AlertItem(AlertIconType.Rcw, Strings.ALERT_TITLE_RCW, "7:22 PM"),
-    AlertItem(AlertIconType.Bsd, Strings.ALERT_TITLE_BSD_RIGHT, "6:57 PM"),
-    AlertItem(AlertIconType.Bsd, Strings.ALERT_TITLE_BSD_LEFT, "6:34 PM"),
-    AlertItem(AlertIconType.Bsd, Strings.ALERT_TITLE_BSD_RIGHT, "6:11 PM"),
-    AlertItem(AlertIconType.Rcw, Strings.ALERT_TITLE_RCW, "5:45 PM"),
+    AlertItem(AlertIconType.Bsd, "左側盲點警示", "9:46 PM"),
+    AlertItem(AlertIconType.Rcw, "後方防撞警示", "9:32 PM"),
+    AlertItem(AlertIconType.Bsd, "右側盲點警示", "9:05 PM"),
+    AlertItem(AlertIconType.Tilt, "車輛傾倒偵測", "8:31 PM"),
+    AlertItem(AlertIconType.Bsd, "左側盲點警示", "7:48 PM"),
+    AlertItem(AlertIconType.Rcw, "後方防撞警示", "7:22 PM"),
+    AlertItem(AlertIconType.Bsd, "右側盲點警示", "6:57 PM"),
+    AlertItem(AlertIconType.Bsd, "左側盲點警示", "6:34 PM"),
+    AlertItem(AlertIconType.Bsd, "右側盲點警示", "6:11 PM"),
+    AlertItem(AlertIconType.Rcw, "後方防撞警示", "5:45 PM"),
 )
 
 @Composable
@@ -100,7 +99,7 @@ private fun StatusBar() {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = Strings.CLOCK_DEFAULT,
+            text = "21:54",
             color = MotoColors.Foreground,
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.weight(1f),
@@ -117,7 +116,7 @@ private fun PageTitle() {
         contentAlignment = Alignment.Center,
     ) {
         Text(
-            text = Strings.ALERTS_TITLE,
+            text = "觸發事件",
             color = MotoColors.Foreground,
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
@@ -137,8 +136,8 @@ private fun FilterChipRow() {
         horizontalArrangement = Arrangement.spacedBy(spacing.sm),
     ) {
         DateChip()
-        FilterChip(label = Strings.ALERTS_FILTER_ALL, selected = true)
-        FilterChip(label = Strings.ALERTS_FILTER_BSD, selected = false)
+        FilterChip(label = "全部 10", selected = true)
+        FilterChip(label = "BSD …", selected = false)
     }
 }
 
@@ -206,7 +205,7 @@ private fun DaySectionHeader() {
         )
         Spacer(Modifier.width(spacing.sm))
         Text(
-            text = Strings.ALERTS_DAY_HEADER,
+            text = "今天 · 2026-05-14",
             color = MotoColors.Muted,
             style = MaterialTheme.typography.labelLarge,
         )
