@@ -60,4 +60,62 @@ object Strings {
     const val TAG_RCW = "RCW"
     const val TAG_FALL = "傾倒"
     const val TAG_SHOT = "截圖"
+
+    const val SETTINGS_TITLE = "設定"
+    const val SETTINGS_GROUP_DEVICE = "裝置"
+    const val SETTINGS_GROUP_LIVE = "即時畫面"
+    const val SETTINGS_GROUP_ALERTS = "警示功能"
+    const val SETTINGS_GROUP_EVENT_REC = "事件錄影"
+    const val SETTINGS_GROUP_STORAGE = "儲存與錄影"
+    const val SETTINGS_GROUP_FIRMWARE = "韌體與系統"
+    const val SETTINGS_GROUP_VERSION = "版本資訊"
+
+    const val SETTINGS_DEVICE_NAME = "MotoCam KC003"
+    const val SETTINGS_DEVICE_FIRMWARE = "韌體版本 v2.1.4"
+    const val SETTINGS_DEVICE_CONNECTED = "已連線"
+
+    const val SETTINGS_STORAGE_LABEL = "儲存空間"
+    const val SETTINGS_STORAGE_TOTAL = "10 GB"
+    const val SETTINGS_STORAGE_USED = "已使用 4.2 GB"
+    const val SETTINGS_STORAGE_FREE = "剩餘 5.8 GB"
+
+    const val SETTINGS_DISPLAY_MODE = "顯示模式"
+    const val SETTINGS_DISPLAY_LIVE = "即時影像"
+    const val SETTINGS_DISPLAY_VIRTUAL = "虛擬場景"
+
+    const val SETTINGS_POWERSAVE = "省電模式進入時間"
+    const val SETTINGS_POWERSAVE_1 = "1 分"
+    const val SETTINGS_POWERSAVE_3 = "3 分"
+    const val SETTINGS_POWERSAVE_5 = "5 分"
+    const val SETTINGS_POWERSAVE_ALWAYS = "恆亮"
+
+    const val SETTINGS_BSD_ENABLE = "BSD 盲點偵測"
+    const val SETTINGS_BSD_SENSITIVITY = "BSD 靈敏度"
+    const val SETTINGS_RCW_ENABLE = "RCW 後方防撞"
+    const val SETTINGS_RCW_SENSITIVITY = "RCW 靈敏度"
+    const val SETTINGS_FALL_ENABLE = "傾倒偵測"
+
+    const val SETTINGS_SENS_LOW = "低"
+    const val SETTINGS_SENS_MID = "中"
+    const val SETTINGS_SENS_HIGH = "高"
+
+    const val SETTINGS_EVENT_PRE = "事件前錄影"
+    const val SETTINGS_EVENT_PRE_VALUE = "5 秒"
+    const val SETTINGS_EVENT_POST = "事件後錄影"
+    const val SETTINGS_EVENT_POST_VALUE = "10 秒"
+
+    const val SETTINGS_LOOP_CAP = "循環錄影容量上限"
+    const val SETTINGS_LOOP_2G = "2 GB"
+    const val SETTINGS_LOOP_4G = "4 GB"
+    const val SETTINGS_LOOP_6G = "6 GB"
+    const val SETTINGS_LOOP_8G = "8 GB"
+
+    const val SETTINGS_FW_CHECK = "檢查韌體更新"
+    const val SETTINGS_FW_AUTO = "自動更新"
+    const val SETTINGS_FW_RESET = "回復原廠設定"
+
+    const val SETTINGS_VERSION_APP = "App 版本"
+    const val SETTINGS_VERSION_APP_VALUE = "1.0.0"
+    const val SETTINGS_VERSION_DEVICE = "裝置韌體"
+    const val SETTINGS_VERSION_DEVICE_VALUE = "v2.1.4"
 }
