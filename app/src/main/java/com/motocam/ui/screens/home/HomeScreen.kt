@@ -34,10 +34,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.motocam.R
 import com.motocam.ui.Strings
+import com.motocam.ui.theme.LocalSpacing
 import com.motocam.ui.theme.MotoTheme
 
 @Composable
 fun HomeScreen(state: HomeUiState = HomeUiState.mock()) {
+    val spacing = LocalSpacing.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -46,21 +48,21 @@ fun HomeScreen(state: HomeUiState = HomeUiState.mock()) {
     ) {
         StatusBar(clock = state.clock, recording = state.recording)
         SpeedHero(speed = state.speedKmh, unit = state.speedUnit)
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(spacing.sm))
         if (state.banner.visible) {
             AlertBannerCard(state.banner)
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(spacing.sm))
         }
         CameraViewportCard(state.camera)
-        Spacer(Modifier.height(12.dp))
+        Spacer(Modifier.height(spacing.md))
         ImageQualityRow(state.imageQuality)
-        Spacer(Modifier.height(12.dp))
+        Spacer(Modifier.height(spacing.md))
         ReminderStrip(state.reminderText)
-        Spacer(Modifier.height(12.dp))
+        Spacer(Modifier.height(spacing.md))
         ShutterButton()
-        Spacer(Modifier.height(12.dp))
+        Spacer(Modifier.height(spacing.md))
         AlertChipRow(state.alertChips)
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(spacing.lg))
     }
 }
 
@@ -68,10 +70,11 @@ fun HomeScreen(state: HomeUiState = HomeUiState.mock()) {
 private fun StatusBar(clock: String, recording: Boolean) {
     val scheme = MaterialTheme.colorScheme
     val typo = MaterialTheme.typography
+    val spacing = LocalSpacing.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 12.dp),
+            .padding(horizontal = spacing.xl, vertical = spacing.md),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
@@ -109,10 +112,11 @@ private fun StatusBar(clock: String, recording: Boolean) {
 private fun SpeedHero(speed: Int, unit: String) {
     val scheme = MaterialTheme.colorScheme
     val typo = MaterialTheme.typography
+    val spacing = LocalSpacing.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 20.dp, end = 20.dp, top = 4.dp, bottom = 4.dp),
+            .padding(start = spacing.xl, end = spacing.xl, top = spacing.xs, bottom = spacing.xs),
         verticalAlignment = Alignment.Bottom,
     ) {
         Text(
@@ -134,6 +138,7 @@ private fun SpeedHero(speed: Int, unit: String) {
 private fun CameraViewportCard(camera: CameraOverlayState) {
     val scheme = MaterialTheme.colorScheme
     val typo = MaterialTheme.typography
+    val spacing = LocalSpacing.current
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -173,13 +178,13 @@ private fun CameraViewportCard(camera: CameraOverlayState) {
         Box(
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .padding(8.dp)
+                .padding(spacing.sm)
                 .clip(MaterialTheme.shapes.small)
                 .background(
                     if (camera.recording) scheme.error.copy(alpha = 0.85f)
                     else scheme.onSurfaceVariant.copy(alpha = 0.8f),
                 )
-                .padding(horizontal = 8.dp, vertical = 3.dp),
+                .padding(horizontal = spacing.sm, vertical = 3.dp),
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(
@@ -209,7 +214,7 @@ private fun CameraViewportCard(camera: CameraOverlayState) {
         Box(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(8.dp)
+                .padding(spacing.sm)
                 .size(28.dp)
                 .clip(MaterialTheme.shapes.small)
                 .background(scheme.background.copy(alpha = 0.55f))
@@ -280,6 +285,7 @@ private fun AlertBannerCard(banner: AlertBannerState) {
 private fun ImageQualityRow(iq: ImageQualityState) {
     val scheme = MaterialTheme.colorScheme
     val typo = MaterialTheme.typography
+    val spacing = LocalSpacing.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -287,7 +293,7 @@ private fun ImageQualityRow(iq: ImageQualityState) {
             .clip(MaterialTheme.shapes.medium)
             .background(scheme.surface)
             .border(1.dp, scheme.outline, MaterialTheme.shapes.medium)
-            .padding(horizontal = 14.dp, vertical = 12.dp),
+            .padding(horizontal = 14.dp, vertical = spacing.md),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(

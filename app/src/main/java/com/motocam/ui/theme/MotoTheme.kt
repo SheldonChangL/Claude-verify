@@ -24,6 +24,7 @@ fun MotoTheme(content: @Composable () -> Unit) {
     ) {
         CompositionLocalProvider(
             LocalRippleConfiguration provides MotoRippleConfiguration,
+            LocalSpacing provides Spacing.fromTokens(),
             content = content,
         )
     }
