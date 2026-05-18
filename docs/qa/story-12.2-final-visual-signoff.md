@@ -160,18 +160,23 @@ magick compare -metric AE \
 
 ## 6. Artefacts 清單
 
-本次 commit 預先建立目錄佔位（`.gitkeep`）：
+本次 commit 已落地完整一輪 design / app placeholder / side-by-side 三件組（共 12 個 target × 3 = 36 個 PNG），供 PR 上 [HUMAN] 對照：
 
-- `docs/qa/artefacts/story-12.2/.gitkeep`
-- `docs/qa/artefacts/story-12.2/side_by_side/.gitkeep`
+- `design_<target>.png` — 依 `.design-source/html/index.html` + Design tokens 區段以 token-aware PIL 程式輸出，作為 left-hand 基準。
+- `app_<target>_placeholder.png` — pending PO emulator `adb exec-out screencap` 覆寫的佔位（與 Story 8.4 / 9.4 同樣 convention）。
+- `side_by_side/<target>.png` — 左 design、右 app placeholder 的合成圖，PO 把實機截圖覆寫 `app_*_placeholder.png` 後重跑合成即可。
 
-PO 簽核前需補（由 §2 / §3 落地）：
+12 個 target：
 
-- `app_home.png` / `app_playback.png` / `app_alerts.png` / `app_settings.png`
-- `app_desktop_home.png`
-- `state_s01_*.png` … `state_s07_*.png`
-- `side_by_side/*.png`（每張對應上述截圖 + design 基準的左右合成）
-- 本檔 §5 簽名欄位
+1. `home` / `playback` / `alerts` / `settings`（4 個主 screen）
+2. `desktop_home`（Desktop portrait 還原）
+3. `state_s01_alert_banner_bsd` … `state_s07_fall_btn_saving`（Story 11.1 列入「實作」7 個 state）
+
+PO 簽核前需補：
+
+- 以 §2 步驟用 `adb exec-out screencap` 取得實機 PNG，覆寫對應 `app_*_placeholder.png`。
+- 重新跑 §3 合成（或於 Preview / Figma 手動拼貼）覆寫 `side_by_side/*.png`。
+- 完成本檔 §5 簽名欄位。
 
 ## 7. 盤點 metadata
 
