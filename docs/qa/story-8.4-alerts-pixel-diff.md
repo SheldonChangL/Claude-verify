@@ -12,8 +12,11 @@ Depends on: Story 8.3（AlertsScreen 1:1 mirror）
 
 - AVD：Pixel 6, API 35（Android 15）
 - App build：`ai-factory/github-26` HEAD（已包含 Story 8.3 AlertsScreen mirror、Story 8.2 AlertRow composable、Story 8.1 Alerts icon 匯入）
-- 參考圖：`.design-source/screens/alerts.png`（或 `alerts_full.png` 取長截圖）
-  - ⚠ 若 `.design-source/screens/` 為空，請改用 `https://motocam.netlify.app/alerts` 桌機瀏覽器截圖，或從 PRD 附件取得 `alerts.png` 後置入該資料夾再續行。
+- 參考圖：本次自動產出版本已落地至
+  `docs/qa/artefacts/story-8.4/design_alerts.png`
+  （來源：`https://motocam.netlify.app/alerts`，Chrome headless 800x1700 抓取）。
+  - `.design-source/screens/alerts.png` 在本 milestone 為空（mirror 階段未抓到），
+    故改以 deployed URL 為設計基準；若日後 mirror 補回 `alerts.png`，可覆蓋此檔。
 
 ## 2. 取得 App 截圖
 
@@ -33,15 +36,16 @@ adb exec-out screencap -p > docs/qa/artefacts/story-8.4/app_alerts.png
 
 ## 3. Side-by-side 比對
 
-請使用任一影像工具（Preview / Figma / Photoshop / `compare` from ImageMagick）將
-`docs/qa/artefacts/story-8.4/app_alerts.png` 與 `.design-source/screens/alerts.png`
-左右並排，輸出比對圖：
+本 PR 已附自動生成版本：
 
-```
-docs/qa/artefacts/story-8.4/side_by_side.png
-```
+- `docs/qa/artefacts/story-8.4/side_by_side.png`
+  （左：design = `design_alerts.png`；右：app 佔位框，待 §2 截圖補上）
 
-附於 PR 描述與 issue #26 收尾留言。
+PO 流程：
+1. 依 §2 取得 `app_alerts.png` 後，用任一影像工具
+   （Preview / Figma / Photoshop / `compare` from ImageMagick）
+   重新合成左右並排圖，**覆蓋** `side_by_side.png`。
+2. 於 PR 描述與 issue #26 收尾留言附上最終版 `side_by_side.png`。
 
 ## 4. 驗收檢查表
 
@@ -67,8 +71,16 @@ docs/qa/artefacts/story-8.4/side_by_side.png
 > 兩列皆「通過」後，Story 8.4 視為 Done，Alerts Screen group 視覺 gate 解鎖；
 > 任一列「待修」請於 issue #26 留言列出落差項目並回退至 Story 8.3 修正。
 
-## 6. Artefacts 清單（PR 必附）
+## 6. Artefacts 清單
 
-- `docs/qa/artefacts/story-8.4/app_alerts.png`
-- `docs/qa/artefacts/story-8.4/side_by_side.png`
+本次 commit 已附（自動生成）：
+
+- `docs/qa/artefacts/story-8.4/design_alerts.png` — design 基準（deployed URL）
+- `docs/qa/artefacts/story-8.4/app_alerts_placeholder.png` — app 欄位佔位框
+- `docs/qa/artefacts/story-8.4/side_by_side.png` — 起始版 side-by-side（右半待 PO 覆蓋）
+
+PO 簽核前需補：
+
+- `docs/qa/artefacts/story-8.4/app_alerts.png` — 由 §2 emulator/adb 取得
+- 重新合成後覆蓋 `side_by_side.png`
 - 本檔（含 §5 簽名）
