@@ -15,21 +15,21 @@ object MotoColors {
     val Danger = Color(0xFFFF4444)
     val Muted = Color(0xFFAAAAAA)
     val Outline = Color(0x14FFFFFF)
-}
 
-val darkScheme: ColorScheme = darkColorScheme(
-    primary = MotoColors.Accent,
-    onPrimary = MotoColors.OnAccent,
-    secondary = MotoColors.Success,
-    onSecondary = MotoColors.OnAccent,
-    tertiary = MotoColors.Warning,
-    onTertiary = MotoColors.OnAccent,
-    background = MotoColors.Background,
-    onBackground = MotoColors.Foreground,
-    surface = MotoColors.Surface,
-    onSurface = MotoColors.Foreground,
-    onSurfaceVariant = MotoColors.Muted,
-    error = MotoColors.Danger,
-    onError = MotoColors.Foreground,
-    outline = MotoColors.Outline,
-)
+    val darkScheme: ColorScheme = darkColorScheme(
+        primary = Accent,
+        onPrimary = OnAccent,
+        secondary = Success,
+        onSecondary = OnAccent,
+        tertiary = Warning,
+        onTertiary = OnAccent,
+        background = Background,
+        onBackground = Foreground,
+        surface = Surface,
+        onSurface = Foreground,
+        onSurfaceVariant = Muted,
+        error = Danger,
+        onError = Foreground,
+        outline = Outline,
+    )
+}
