@@ -6,6 +6,22 @@ enum class AlertChipKind { BSD_LEFT, BSD_RIGHT, RCW, TILT, CLEAR }
 
 enum class AlertBannerKind { BSD, RCW, FALL }
 
+enum class BsdSideKind { BSD, RCW }
+
+data class BsdSideOverlayState(
+    val leftVisible: Boolean = false,
+    val rightVisible: Boolean = false,
+    val kind: BsdSideKind = BsdSideKind.BSD,
+)
+
+data class FallOverlayState(
+    val visible: Boolean = false,
+    val title: String = Strings.FALL_TITLE,
+    val angleDeg: Int = 43,
+    val durationSec: Float = 3.2f,
+    val savingLabel: String = Strings.FALL_SAVING,
+)
+
 data class AlertChip(
     val kind: AlertChipKind,
     val label: String,
@@ -47,6 +63,8 @@ data class HomeUiState(
     val imageQuality: ImageQualityState,
     val reminderText: String,
     val alertChips: List<AlertChip>,
+    val bsdSide: BsdSideOverlayState = BsdSideOverlayState(),
+    val fallOverlay: FallOverlayState = FallOverlayState(),
 ) {
     companion object {
         fun mock(): HomeUiState = HomeUiState(

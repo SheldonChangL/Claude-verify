@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -40,29 +42,32 @@ import com.motocam.ui.theme.MotoTheme
 @Composable
 fun HomeScreen(state: HomeUiState = HomeUiState.mock()) {
     val spacing = LocalSpacing.current
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .verticalScroll(rememberScrollState()),
-    ) {
-        StatusBar(clock = state.clock, recording = state.recording)
-        SpeedHero(speed = state.speedKmh, unit = state.speedUnit)
-        Spacer(Modifier.height(spacing.sm))
-        if (state.banner.visible) {
-            AlertBannerCard(state.banner)
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .verticalScroll(rememberScrollState()),
+        ) {
+            StatusBar(clock = state.clock, recording = state.recording)
+            SpeedHero(speed = state.speedKmh, unit = state.speedUnit)
             Spacer(Modifier.height(spacing.sm))
+            if (state.banner.visible) {
+                AlertBannerCard(state.banner)
+                Spacer(Modifier.height(spacing.sm))
+            }
+            CameraViewportCard(state.camera, state.fallOverlay)
+            Spacer(Modifier.height(spacing.md))
+            ImageQualityRow(state.imageQuality)
+            Spacer(Modifier.height(spacing.md))
+            ReminderStrip(state.reminderText)
+            Spacer(Modifier.height(spacing.md))
+            ShutterButton()
+            Spacer(Modifier.height(spacing.md))
+            AlertChipRow(state.alertChips)
+            Spacer(Modifier.height(spacing.lg))
         }
-        CameraViewportCard(state.camera)
-        Spacer(Modifier.height(spacing.md))
-        ImageQualityRow(state.imageQuality)
-        Spacer(Modifier.height(spacing.md))
-        ReminderStrip(state.reminderText)
-        Spacer(Modifier.height(spacing.md))
-        ShutterButton()
-        Spacer(Modifier.height(spacing.md))
-        AlertChipRow(state.alertChips)
-        Spacer(Modifier.height(spacing.lg))
+        BsdSideOverlays(state.bsdSide)
     }
 }
 
@@ -135,7 +140,7 @@ private fun SpeedHero(speed: Int, unit: String) {
 }
 
 @Composable
-private fun CameraViewportCard(camera: CameraOverlayState) {
+private fun CameraViewportCard(camera: CameraOverlayState, fall: FallOverlayState = FallOverlayState()) {
     val scheme = MaterialTheme.colorScheme
     val typo = MaterialTheme.typography
     val spacing = LocalSpacing.current
@@ -227,6 +232,134 @@ private fun CameraViewportCard(camera: CameraOverlayState) {
                 style = typo.titleSmall,
             )
         }
+
+        if (fall.visible) {
+            FallOverlay(fall)
+        }
+    }
+}
+
+@Composable
+private fun BoxScope.FallOverlay(state: FallOverlayState) {
+    val scheme = MaterialTheme.colorScheme
+    val typo = MaterialTheme.typography
+    val fallAccent = Color(0xFFFF5864)
+    val fallNumber = Color(0xFFFF7080)
+    Column(
+        modifier = Modifier
+            .matchParentSize()
+            .clip(MaterialTheme.shapes.medium)
+            .background(Color(0xAD140004))
+            .border(2.dp, scheme.error, MaterialTheme.shapes.medium)
+            .padding(horizontal = 14.dp, vertical = 10.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Box(
+            modifier = Modifier
+                .size(34.dp)
+                .clip(CircleShape)
+                .background(scheme.error.copy(alpha = 0.18f))
+                .border(1.5.dp, fallAccent.copy(alpha = 0.7f), CircleShape),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(text = "!", color = fallAccent, style = typo.titleMedium)
+        }
+        Spacer(Modifier.height(6.dp))
+        Text(
+            text = state.title,
+            color = fallAccent,
+            style = typo.titleMedium,
+        )
+        Spacer(Modifier.height(6.dp))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = Strings.FALL_ANGLE_PREFIX + " ",
+                color = scheme.onBackground.copy(alpha = 0.78f),
+                style = typo.bodyMedium,
+            )
+            Text(
+                text = "${state.angleDeg}°",
+                color = fallNumber,
+                style = typo.titleSmall,
+            )
+            Spacer(Modifier.width(8.dp))
+            Text(text = "·", color = scheme.onBackground.copy(alpha = 0.4f), style = typo.bodyMedium)
+            Spacer(Modifier.width(8.dp))
+            Text(
+                text = Strings.FALL_DURATION_PREFIX + " ",
+                color = scheme.onBackground.copy(alpha = 0.78f),
+                style = typo.bodyMedium,
+            )
+            Text(
+                text = "${state.durationSec}s",
+                color = fallNumber,
+                style = typo.titleSmall,
+            )
+        }
+        Spacer(Modifier.height(8.dp))
+        FallSavingButton(label = state.savingLabel)
+    }
+}
+
+@Composable
+private fun FallSavingButton(label: String) {
+    val scheme = MaterialTheme.colorScheme
+    val typo = MaterialTheme.typography
+    Row(
+        modifier = Modifier
+            .clip(MaterialTheme.shapes.small)
+            .background(Color(0x14FFFFFF))
+            .border(1.dp, Color(0x2EFFFFFF), MaterialTheme.shapes.small)
+            .padding(horizontal = 18.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            modifier = Modifier
+                .size(8.dp)
+                .clip(CircleShape)
+                .background(scheme.error),
+        )
+        Spacer(Modifier.width(8.dp))
+        Text(
+            text = label,
+            color = scheme.onBackground,
+            style = typo.labelLarge,
+        )
+    }
+}
+
+@Composable
+private fun BoxScope.BsdSideOverlays(state: BsdSideOverlayState) {
+    val color = when (state.kind) {
+        BsdSideKind.BSD -> MaterialTheme.colorScheme.tertiary.copy(alpha = 0.6f)
+        BsdSideKind.RCW -> MaterialTheme.colorScheme.error.copy(alpha = 0.7f)
+    }
+    if (state.leftVisible) {
+        Box(
+            modifier = Modifier
+                .align(Alignment.CenterStart)
+                .fillMaxHeight()
+                .width(58.dp)
+                .background(
+                    androidx.compose.ui.graphics.Brush.horizontalGradient(
+                        colors = listOf(color, Color.Transparent),
+                    ),
+                ),
+        )
+    }
+    if (state.rightVisible) {
+        Box(
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .fillMaxHeight()
+                .width(58.dp)
+                .background(
+                    androidx.compose.ui.graphics.Brush.horizontalGradient(
+                        colors = listOf(Color.Transparent, color),
+                    ),
+                ),
+        )
     }
 }
 
@@ -418,5 +551,163 @@ private fun AlertChipView(chip: AlertChip, modifier: Modifier = Modifier) {
 private fun HomeScreenPreview() {
     MotoTheme {
         HomeScreen()
+    }
+}
+
+@Preview(
+    name = "Banner — BSD 左",
+    showBackground = true,
+    backgroundColor = 0xFF06080F,
+    widthDp = 390,
+    heightDp = 844,
+)
+@Composable
+private fun HomeScreenBannerBsdPreview() {
+    MotoTheme {
+        HomeScreen(
+            state = HomeUiState.mock().copy(
+                banner = AlertBannerState(
+                    visible = true,
+                    kind = AlertBannerKind.BSD,
+                    title = Strings.BANNER_BSD_TITLE,
+                    subtitle = Strings.BANNER_BSD_SUB_LEFT,
+                    time = Strings.BANNER_TIME_DEFAULT,
+                ),
+            ),
+        )
+    }
+}
+
+@Preview(
+    name = "Banner — RCW",
+    showBackground = true,
+    backgroundColor = 0xFF06080F,
+    widthDp = 390,
+    heightDp = 844,
+)
+@Composable
+private fun HomeScreenBannerRcwPreview() {
+    MotoTheme {
+        HomeScreen(
+            state = HomeUiState.mock().copy(
+                banner = AlertBannerState(
+                    visible = true,
+                    kind = AlertBannerKind.RCW,
+                    title = Strings.BANNER_RCW_TITLE,
+                    subtitle = Strings.BANNER_RCW_SUB_BOTH,
+                    time = Strings.BANNER_TIME_DEFAULT,
+                ),
+            ),
+        )
+    }
+}
+
+@Preview(
+    name = "BSD side overlay — 左",
+    showBackground = true,
+    backgroundColor = 0xFF06080F,
+    widthDp = 390,
+    heightDp = 844,
+)
+@Composable
+private fun HomeScreenBsdLeftPreview() {
+    MotoTheme {
+        HomeScreen(
+            state = HomeUiState.mock().copy(
+                bsdSide = BsdSideOverlayState(
+                    leftVisible = true,
+                    kind = BsdSideKind.BSD,
+                ),
+            ),
+        )
+    }
+}
+
+@Preview(
+    name = "BSD side overlay — 右",
+    showBackground = true,
+    backgroundColor = 0xFF06080F,
+    widthDp = 390,
+    heightDp = 844,
+)
+@Composable
+private fun HomeScreenBsdRightPreview() {
+    MotoTheme {
+        HomeScreen(
+            state = HomeUiState.mock().copy(
+                bsdSide = BsdSideOverlayState(
+                    rightVisible = true,
+                    kind = BsdSideKind.BSD,
+                ),
+            ),
+        )
+    }
+}
+
+@Preview(
+    name = "BSD side overlay — RCW 雙側",
+    showBackground = true,
+    backgroundColor = 0xFF06080F,
+    widthDp = 390,
+    heightDp = 844,
+)
+@Composable
+private fun HomeScreenBsdRcwBothPreview() {
+    MotoTheme {
+        HomeScreen(
+            state = HomeUiState.mock().copy(
+                bsdSide = BsdSideOverlayState(
+                    leftVisible = true,
+                    rightVisible = true,
+                    kind = BsdSideKind.RCW,
+                ),
+            ),
+        )
+    }
+}
+
+@Preview(
+    name = "Fall overlay + 保護錄影紀錄中",
+    showBackground = true,
+    backgroundColor = 0xFF06080F,
+    widthDp = 390,
+    heightDp = 844,
+)
+@Composable
+private fun HomeScreenFallOverlayPreview() {
+    MotoTheme {
+        HomeScreen(
+            state = HomeUiState.mock().copy(
+                camera = CameraOverlayState(
+                    recording = true,
+                    recBadgeText = Strings.REC,
+                    timestamp = Strings.TIMESTAMP_DEFAULT,
+                ),
+                fallOverlay = FallOverlayState(visible = true),
+            ),
+        )
+    }
+}
+
+@Preview(
+    name = "REC badge — recording",
+    showBackground = true,
+    backgroundColor = 0xFF06080F,
+    widthDp = 390,
+    heightDp = 844,
+)
+@Composable
+private fun HomeScreenRecordingPreview() {
+    MotoTheme {
+        HomeScreen(
+            state = HomeUiState.mock().copy(
+                recording = true,
+                camera = CameraOverlayState(
+                    recording = true,
+                    recBadgeText = Strings.REC,
+                    timestamp = Strings.TIMESTAMP_DEFAULT,
+                ),
+            ),
+        )
     }
 }
