@@ -49,4 +49,15 @@ object Strings {
     const val TAB_ALERTS = "觸發事件"
     const val TAB_PLAYBACK = "回放"
     const val TAB_SETTINGS = "設定"
+
+    const val PLAYBACK_TITLE = "回放"
+    const val PLAYBACK_FILTER_ALL = "全部 12"
+    const val PLAYBACK_FILTER_BSD = "BSD …"
+    const val PLAYBACK_FILTER_SELECT = "選取"
+    const val PLAYBACK_DAY_HEADER = "今天 · 2026-05-14"
+
+    const val TAG_BSD = "BSD"
+    const val TAG_RCW = "RCW"
+    const val TAG_FALL = "傾倒"
+    const val TAG_SHOT = "截圖"
 }
