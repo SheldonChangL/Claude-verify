@@ -14,16 +14,16 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MaterialTheme {
-                Surface(modifier = Modifier.fillMaxSize()) {
-                    Greeting()
-                }
-            }
+            MotoCamApp()
         }
     }
 }
 
 @Composable
-fun Greeting() {
-    Text(text = "MotoCam")
+fun MotoCamApp() {
+    MaterialTheme {
+        Surface(modifier = Modifier.fillMaxSize()) {
+            Text(text = "Bootstrapped")
+        }
+    }
 }
