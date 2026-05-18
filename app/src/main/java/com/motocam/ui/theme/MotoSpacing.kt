@@ -12,6 +12,8 @@ data class Spacing(
     val lg: Dp,
     val xl: Dp,
     val iconSm: Dp,
+    val iconMd: Dp,
+    val avatarMd: Dp,
     val thumbWidth: Dp,
     val thumbHeight: Dp,
 ) {
@@ -26,6 +28,8 @@ data class Spacing(
             lg = 16.dp,
             xl = 20.dp,
             iconSm = 24.dp,
+            iconMd = 18.dp,
+            avatarMd = 36.dp,
             thumbWidth = 88.dp,
             thumbHeight = 56.dp,
         )

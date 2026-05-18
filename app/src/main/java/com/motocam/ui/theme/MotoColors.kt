@@ -15,6 +15,10 @@ object MotoColors {
     val Danger = Color(0xFFFF4444)
     val Muted = Color(0xFFAAAAAA)
     val Outline = Color(0x14FFFFFF)
+    val WarningSoft = Color(0x2EFF9F0A)
+    val DangerSoft = Color(0x2EFF4444)
+    val IconBubbleWarning = Color(0x2EFF9F0A)
+    val IconBubbleDanger = Color(0x38FF4444)
 
     val darkScheme: ColorScheme = darkColorScheme(
         primary = Accent,
