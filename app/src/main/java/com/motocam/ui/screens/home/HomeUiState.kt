@@ -50,7 +50,7 @@ data class HomeUiState(
 ) {
     companion object {
         fun mock(): HomeUiState = HomeUiState(
-            clock = "21:54",
+            clock = Strings.CLOCK_DEFAULT,
             recording = false,
             recIndicatorText = Strings.REC_IDLE,
             speedKmh = 32,
@@ -58,14 +58,14 @@ data class HomeUiState(
             camera = CameraOverlayState(
                 recording = false,
                 recBadgeText = Strings.REC_IDLE,
-                timestamp = "2026-05-14 21:54:11",
+                timestamp = Strings.TIMESTAMP_DEFAULT,
             ),
             banner = AlertBannerState(
                 visible = false,
                 kind = AlertBannerKind.BSD,
                 title = Strings.BANNER_BSD_TITLE,
                 subtitle = Strings.BANNER_BSD_SUB_LEFT,
-                time = "21:34",
+                time = Strings.BANNER_TIME_DEFAULT,
             ),
             imageQuality = ImageQualityState(),
             reminderText = Strings.REMINDER_RECORDING_OFF,

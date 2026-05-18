@@ -24,6 +24,13 @@ object Strings {
 
     const val SHUTTER_DESC = "截圖"
     const val FULLSCREEN_DESC = "全螢幕"
+    const val FULLSCREEN_GLYPH = "⛶"
+    const val ACCORDION_COLLAPSED_GLYPH = "▸"
+
+    const val CLOCK_DEFAULT = "21:54"
+    const val TIMESTAMP_DEFAULT = "2026-05-14 21:54:11"
+    const val BANNER_TIME_DEFAULT = "21:34"
+    const val IQ_SUBTITLE = "亮度 / 對比 / 飽和度 / 銳利度"
 
     const val BANNER_BSD_TITLE = "盲點警示 BSD"
     const val BANNER_BSD_SUB_LEFT = "左後方偵測到車輛接近"

@@ -1,5 +1,6 @@
 package com.motocam.ui.screens.home
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +21,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -33,10 +35,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.Image
 import com.motocam.R
 import com.motocam.ui.Strings
-import com.motocam.ui.theme.MotoColors
 import com.motocam.ui.theme.MotoTheme
 
 @Composable
@@ -44,7 +44,7 @@ fun HomeScreen(state: HomeUiState = HomeUiState.mock()) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MotoColors.Background)
+            .background(MaterialTheme.colorScheme.background)
             .verticalScroll(rememberScrollState()),
     ) {
         StatusBar(clock = state.clock, recording = state.recording)
@@ -69,6 +69,7 @@ fun HomeScreen(state: HomeUiState = HomeUiState.mock()) {
 
 @Composable
 private fun StatusBar(clock: String, recording: Boolean) {
+    val scheme = MaterialTheme.colorScheme
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -77,7 +78,7 @@ private fun StatusBar(clock: String, recording: Boolean) {
     ) {
         Text(
             text = clock,
-            color = MotoColors.Foreground,
+            color = scheme.onBackground,
             fontSize = 15.sp,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.weight(1f),
@@ -85,7 +86,7 @@ private fun StatusBar(clock: String, recording: Boolean) {
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(percent = 50))
-                .background(Color.Black)
+                .background(scheme.background)
                 .padding(horizontal = 10.dp, vertical = 4.dp),
             contentAlignment = Alignment.Center,
         ) {
@@ -94,12 +95,12 @@ private fun StatusBar(clock: String, recording: Boolean) {
                     modifier = Modifier
                         .size(7.dp)
                         .clip(CircleShape)
-                        .background(if (recording) MotoColors.Danger else MotoColors.Muted),
+                        .background(if (recording) scheme.error else scheme.onSurfaceVariant),
                 )
                 Spacer(Modifier.width(6.dp))
                 Text(
                     text = Strings.REC,
-                    color = MotoColors.Foreground,
+                    color = scheme.onBackground,
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Bold,
                 )
@@ -110,6 +111,7 @@ private fun StatusBar(clock: String, recording: Boolean) {
 
 @Composable
 private fun SpeedHero(speed: Int, unit: String) {
+    val scheme = MaterialTheme.colorScheme
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -118,14 +120,14 @@ private fun SpeedHero(speed: Int, unit: String) {
     ) {
         Text(
             text = speed.toString(),
-            color = MotoColors.Accent,
+            color = scheme.primary,
             fontSize = 96.sp,
             fontWeight = FontWeight.Black,
         )
         Spacer(Modifier.width(10.dp))
         Text(
             text = unit,
-            color = MotoColors.Accent,
+            color = scheme.primary,
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 14.dp),
@@ -135,13 +137,14 @@ private fun SpeedHero(speed: Int, unit: String) {
 
 @Composable
 private fun CameraViewportCard(camera: CameraOverlayState) {
+    val scheme = MaterialTheme.colorScheme
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 14.dp)
             .clip(RoundedCornerShape(12.dp))
-            .background(Color(0xFF0A0D14))
-            .border(1.dp, MotoColors.Outline, RoundedCornerShape(12.dp))
+            .background(scheme.background)
+            .border(1.dp, scheme.outline, RoundedCornerShape(12.dp))
             .aspectRatio(16f / 9f),
     ) {
         Image(
@@ -171,15 +174,14 @@ private fun CameraViewportCard(camera: CameraOverlayState) {
             contentScale = ContentScale.Fit,
         )
 
-        // REC pill top-right
         Box(
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(8.dp)
                 .clip(RoundedCornerShape(5.dp))
                 .background(
-                    if (camera.recording) MotoColors.Danger.copy(alpha = 0.85f)
-                    else Color(0xCC787878),
+                    if (camera.recording) scheme.error.copy(alpha = 0.85f)
+                    else scheme.onSurfaceVariant.copy(alpha = 0.8f),
                 )
                 .padding(horizontal = 8.dp, vertical = 3.dp),
         ) {
@@ -188,42 +190,40 @@ private fun CameraViewportCard(camera: CameraOverlayState) {
                     modifier = Modifier
                         .size(5.dp)
                         .clip(CircleShape)
-                        .background(MotoColors.Foreground),
+                        .background(scheme.onBackground),
                 )
                 Spacer(Modifier.width(4.dp))
                 Text(
                     text = camera.recBadgeText,
-                    color = MotoColors.Foreground,
+                    color = scheme.onBackground,
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Bold,
                 )
             }
         }
 
-        // Timestamp bottom-left
         Text(
             text = camera.timestamp,
-            color = MotoColors.Warning,
+            color = scheme.tertiary,
             fontSize = 11.sp,
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .padding(start = 10.dp, bottom = 8.dp),
         )
 
-        // Fullscreen button bottom-right
         Box(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(8.dp)
                 .size(28.dp)
                 .clip(RoundedCornerShape(7.dp))
-                .background(Color(0x8C000000))
-                .border(1.dp, Color(0x33FFFFFF), RoundedCornerShape(7.dp)),
+                .background(scheme.background.copy(alpha = 0.55f))
+                .border(1.dp, scheme.outline, RoundedCornerShape(7.dp)),
             contentAlignment = Alignment.Center,
         ) {
             Text(
-                text = "⛶",
-                color = MotoColors.Foreground,
+                text = Strings.FULLSCREEN_GLYPH,
+                color = scheme.onBackground,
                 fontSize = 14.sp,
             )
         }
@@ -232,11 +232,13 @@ private fun CameraViewportCard(camera: CameraOverlayState) {
 
 @Composable
 private fun AlertBannerCard(banner: AlertBannerState) {
-    val (accent, bg) = when (banner.kind) {
-        AlertBannerKind.BSD -> MotoColors.Warning to Color(0xE5281C05)
-        AlertBannerKind.RCW -> MotoColors.Danger to Color(0xE5280505)
-        AlertBannerKind.FALL -> Color(0xFFFF5864) to Color(0xEB2D050C)
+    val scheme = MaterialTheme.colorScheme
+    val accent: Color = when (banner.kind) {
+        AlertBannerKind.BSD -> scheme.tertiary
+        AlertBannerKind.RCW -> scheme.error
+        AlertBannerKind.FALL -> scheme.error
     }
+    val bg = accent.copy(alpha = 0.12f)
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -267,13 +269,13 @@ private fun AlertBannerCard(banner: AlertBannerState) {
             Spacer(Modifier.height(2.dp))
             Text(
                 text = banner.subtitle,
-                color = MotoColors.Foreground.copy(alpha = 0.55f),
+                color = scheme.onBackground.copy(alpha = 0.55f),
                 fontSize = 13.sp,
             )
         }
         Text(
             text = banner.time,
-            color = MotoColors.Foreground.copy(alpha = 0.3f),
+            color = scheme.onBackground.copy(alpha = 0.3f),
             fontSize = 13.sp,
         )
     }
@@ -281,32 +283,33 @@ private fun AlertBannerCard(banner: AlertBannerState) {
 
 @Composable
 private fun ImageQualityRow(iq: ImageQualityState) {
+    val scheme = MaterialTheme.colorScheme
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 14.dp)
             .clip(RoundedCornerShape(12.dp))
-            .background(MotoColors.Surface)
-            .border(1.dp, MotoColors.Outline, RoundedCornerShape(12.dp))
+            .background(scheme.surface)
+            .border(1.dp, scheme.outline, RoundedCornerShape(12.dp))
             .padding(horizontal = 14.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = "▸",
-            color = MotoColors.Muted,
+            text = Strings.ACCORDION_COLLAPSED_GLYPH,
+            color = scheme.onSurfaceVariant,
             fontSize = 13.sp,
         )
         Spacer(Modifier.width(10.dp))
         Text(
             text = iq.title,
-            color = MotoColors.Muted,
+            color = scheme.onSurfaceVariant,
             fontSize = 15.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.weight(1f),
         )
         Text(
-            text = "${Strings.IQ_BRIGHTNESS} / ${Strings.IQ_CONTRAST} / ${Strings.IQ_SATURATION} / ${Strings.IQ_SHARPNESS}",
-            color = MotoColors.Muted.copy(alpha = 0.6f),
+            text = Strings.IQ_SUBTITLE,
+            color = scheme.onSurfaceVariant.copy(alpha = 0.6f),
             fontSize = 11.sp,
         )
     }
@@ -314,13 +317,14 @@ private fun ImageQualityRow(iq: ImageQualityState) {
 
 @Composable
 private fun ReminderStrip(text: String) {
+    val scheme = MaterialTheme.colorScheme
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 14.dp)
             .clip(RoundedCornerShape(8.dp))
-            .background(Color(0xFF1E1E1E))
-            .border(1.dp, MotoColors.Outline, RoundedCornerShape(8.dp))
+            .background(scheme.surface)
+            .border(1.dp, scheme.outline, RoundedCornerShape(8.dp))
             .padding(horizontal = 14.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -328,12 +332,12 @@ private fun ReminderStrip(text: String) {
             modifier = Modifier
                 .size(10.dp)
                 .clip(CircleShape)
-                .background(MotoColors.Success),
+                .background(scheme.secondary),
         )
         Spacer(Modifier.width(12.dp))
         Text(
             text = text,
-            color = MotoColors.Foreground,
+            color = scheme.onBackground,
             fontSize = 15.sp,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.weight(1f),
@@ -343,6 +347,7 @@ private fun ReminderStrip(text: String) {
 
 @Composable
 private fun ShutterButton() {
+    val scheme = MaterialTheme.colorScheme
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -353,13 +358,13 @@ private fun ShutterButton() {
             modifier = Modifier
                 .size(64.dp)
                 .clip(CircleShape)
-                .border(1.dp, MotoColors.Outline, CircleShape),
+                .border(1.dp, scheme.outline, CircleShape),
             contentAlignment = Alignment.Center,
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_btn_shutter),
                 contentDescription = Strings.SHUTTER_DESC,
-                tint = MotoColors.Foreground,
+                tint = scheme.onBackground,
                 modifier = Modifier.size(40.dp),
             )
         }
@@ -382,11 +387,12 @@ private fun AlertChipRow(chips: List<AlertChip>) {
 
 @Composable
 private fun AlertChipView(chip: AlertChip, modifier: Modifier = Modifier) {
+    val scheme = MaterialTheme.colorScheme
     val color = when (chip.kind) {
-        AlertChipKind.BSD_LEFT, AlertChipKind.BSD_RIGHT -> MotoColors.Warning
-        AlertChipKind.RCW -> MotoColors.Danger
-        AlertChipKind.TILT -> Color(0xFFFF5864)
-        AlertChipKind.CLEAR -> MotoColors.Muted
+        AlertChipKind.BSD_LEFT, AlertChipKind.BSD_RIGHT -> scheme.tertiary
+        AlertChipKind.RCW -> scheme.error
+        AlertChipKind.TILT -> scheme.error
+        AlertChipKind.CLEAR -> scheme.onSurfaceVariant
     }
     Box(
         modifier = modifier
