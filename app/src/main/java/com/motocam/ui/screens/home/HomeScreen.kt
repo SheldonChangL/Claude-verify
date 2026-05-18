@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -83,7 +82,7 @@ private fun StatusBar(clock: String, recording: Boolean) {
         )
         Box(
             modifier = Modifier
-                .clip(RoundedCornerShape(percent = 50))
+                .clip(MaterialTheme.shapes.extraLarge)
                 .background(scheme.background)
                 .padding(horizontal = 10.dp, vertical = 4.dp),
             contentAlignment = Alignment.Center,
@@ -139,9 +138,9 @@ private fun CameraViewportCard(camera: CameraOverlayState) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 14.dp)
-            .clip(RoundedCornerShape(12.dp))
+            .clip(MaterialTheme.shapes.medium)
             .background(scheme.background)
-            .border(1.dp, scheme.outline, RoundedCornerShape(12.dp))
+            .border(1.dp, scheme.outline, MaterialTheme.shapes.medium)
             .aspectRatio(16f / 9f),
     ) {
         Image(
@@ -175,7 +174,7 @@ private fun CameraViewportCard(camera: CameraOverlayState) {
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(8.dp)
-                .clip(RoundedCornerShape(5.dp))
+                .clip(MaterialTheme.shapes.small)
                 .background(
                     if (camera.recording) scheme.error.copy(alpha = 0.85f)
                     else scheme.onSurfaceVariant.copy(alpha = 0.8f),
@@ -212,9 +211,9 @@ private fun CameraViewportCard(camera: CameraOverlayState) {
                 .align(Alignment.BottomEnd)
                 .padding(8.dp)
                 .size(28.dp)
-                .clip(RoundedCornerShape(7.dp))
+                .clip(MaterialTheme.shapes.small)
                 .background(scheme.background.copy(alpha = 0.55f))
-                .border(1.dp, scheme.outline, RoundedCornerShape(7.dp)),
+                .border(1.dp, scheme.outline, MaterialTheme.shapes.small),
             contentAlignment = Alignment.Center,
         ) {
             Text(
@@ -240,16 +239,16 @@ private fun AlertBannerCard(banner: AlertBannerState) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 14.dp)
-            .clip(RoundedCornerShape(14.dp))
+            .clip(MaterialTheme.shapes.large)
             .background(bg)
-            .border(1.dp, accent.copy(alpha = 0.45f), RoundedCornerShape(14.dp))
+            .border(1.dp, accent.copy(alpha = 0.45f), MaterialTheme.shapes.large)
             .padding(horizontal = 14.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
             modifier = Modifier
                 .size(26.dp)
-                .clip(RoundedCornerShape(6.dp))
+                .clip(MaterialTheme.shapes.small)
                 .background(accent.copy(alpha = 0.18f)),
             contentAlignment = Alignment.Center,
         ) {
@@ -285,9 +284,9 @@ private fun ImageQualityRow(iq: ImageQualityState) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 14.dp)
-            .clip(RoundedCornerShape(12.dp))
+            .clip(MaterialTheme.shapes.medium)
             .background(scheme.surface)
-            .border(1.dp, scheme.outline, RoundedCornerShape(12.dp))
+            .border(1.dp, scheme.outline, MaterialTheme.shapes.medium)
             .padding(horizontal = 14.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -319,9 +318,9 @@ private fun ReminderStrip(text: String) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 14.dp)
-            .clip(RoundedCornerShape(8.dp))
+            .clip(MaterialTheme.shapes.small)
             .background(scheme.surface)
-            .border(1.dp, scheme.outline, RoundedCornerShape(8.dp))
+            .border(1.dp, scheme.outline, MaterialTheme.shapes.small)
             .padding(horizontal = 14.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -393,9 +392,9 @@ private fun AlertChipView(chip: AlertChip, modifier: Modifier = Modifier) {
     }
     Box(
         modifier = modifier
-            .clip(RoundedCornerShape(percent = 50))
+            .clip(MaterialTheme.shapes.extraLarge)
             .background(color.copy(alpha = 0.14f))
-            .border(1.dp, color.copy(alpha = 0.4f), RoundedCornerShape(percent = 50))
+            .border(1.dp, color.copy(alpha = 0.4f), MaterialTheme.shapes.extraLarge)
             .padding(horizontal = 10.dp, vertical = 6.dp),
         contentAlignment = Alignment.Center,
     ) {
