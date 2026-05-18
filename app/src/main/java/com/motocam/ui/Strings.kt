@@ -60,14 +60,4 @@ object Strings {
     const val TAG_RCW = "RCW"
     const val TAG_FALL = "傾倒"
     const val TAG_SHOT = "截圖"
-
-    const val ALERTS_TITLE = "觸發事件"
-    const val ALERTS_FILTER_ALL = "全部 10"
-    const val ALERTS_FILTER_BSD = "BSD …"
-    const val ALERTS_DAY_HEADER = "今天 · 2026-05-14"
-
-    const val ALERT_TITLE_BSD_LEFT = "左側盲點警示"
-    const val ALERT_TITLE_BSD_RIGHT = "右側盲點警示"
-    const val ALERT_TITLE_RCW = "後方防撞警示"
-    const val ALERT_TITLE_FALL = "車輛傾倒偵測"
 }
