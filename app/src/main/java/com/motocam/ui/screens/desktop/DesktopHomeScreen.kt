@@ -30,9 +30,29 @@
 package com.motocam.ui.screens.desktop
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
 import com.motocam.ui.screens.home.HomeScreen
+import com.motocam.ui.theme.MotoTheme
 
+/**
+ * Story 10.2 — DesktopHomeScreen 壓縮 portrait 還原（GitHub #32）
+ *
+ * 依 Story 10.1 結論：desktop_home.png 去掉外層 device frame 後，
+ * 內容與 mobile portrait HomeScreen 完全一致，因此本 composable 直接
+ * 委派至 HomeScreen()，不在 MotoNavHost 註冊獨立 route——避免重複
+ * navigation graph 與重工。
+ *
+ * Pixel diff 驗收參見：docs/qa/story-10.2-desktop-home-pixel-diff.md
+ */
 @Composable
 fun DesktopHomeScreen() {
     HomeScreen()
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF06080F, widthDp = 390, heightDp = 844)
+@Composable
+private fun DesktopHomeScreenPreview() {
+    MotoTheme {
+        DesktopHomeScreen()
+    }
 }
